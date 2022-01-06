@@ -18,7 +18,7 @@ class LoginController extends Controller
         if (!$this->guard()->attempt($credentials)) {
             return response()->json([
 
-                'message' => 'The username or password is incorrect.'
+                'message' => 'The phone number or password is incorrect.'
             ], 500);
         }
 
