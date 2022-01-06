@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('phone_number');
             $table->string('password');
-            $table->string('register_as');
+            $table->boolean('register_as')->default(1)->comment('1 = Driver, 2 = Customer');
             $table->rememberToken();
             $table->timestamps();
         });
