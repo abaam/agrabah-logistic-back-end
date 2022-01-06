@@ -2,8 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Auth\Controllers\RegisterController;
-use App\Http\Auth\Controllers\LoginController;
+use App\Http\Auth\RegisterController;
+use App\Http\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
