@@ -18,6 +18,8 @@ class CreateUsersTable extends Migration
             $table->string('phone_number')->unique();
             $table->string('password');
             $table->boolean('register_as')->default(1)->comment('1 = Driver, 2 = Customer');
+            $table->string('pin');
+            $table->boolean('verified')->default(0)->comment('1 = verified, 0 = Not Verified');
             $table->rememberToken();
             $table->timestamps();
         });

@@ -20,10 +20,14 @@ class RegisterController extends Controller
 
             return response()->json();
         } else {
+            // PIN Code
+            $pin = random_int(100000, 999999);
+
             $user = new User();
             $user->phone_number = $request->phone_number;
             $user->password = Hash::make($request->password);
             $user->register_as = $request->register_as;
+            $user->pin = $pin;
             $user->save();
 
             return response()->json([
