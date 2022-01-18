@@ -3,44 +3,35 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use App\Models\Delivery;
+use Carbon\Carbon;
+use Hash;
 
 class DeliverySeeder extends Seeder
 {
+    private $delivery_data = [];
+
     /**
      * Run the database seeds.
      *
      * @return void
      */
     public function run()
-    {
-        $deliveries =  [
-            [
-                'delivery_date' => 'Jan 06, 2022',
-                'delivery_id' => 'AL-00003',
-                'origin' => 'Bitano, Legazpi City',
-                'destination' => 'Nabua, Camarines Sur',
-                'cost' => 'P 3,500.00',
-                'status' => '3',
-            ],
-            [
-                'delivery_date' => 'Jan 04, 2022',
-                'delivery_id' => 'AL-00002',
-                'origin' => 'Bitano, Legazpi City',
-                'destination' => 'San Rapael, Sto. Domingo',
-                'cost' => 'P 5,500.00',
-                'status' => '2',
-            ],
-            [
-                'delivery_date' => 'Jan 02, 2022',
-                'delivery_id' => 'AL-00001',
-                'origin' => 'Placer, Masbate City',
-                'destination' => 'Virac, Catanduanes',
-                'cost' => 'P 2,500.00',
-                'status' => '1',
-            ]
-        ];
+    {   
+        for ($i=0; $i < 150; $i++) {
+            $delivery_data[] = [
+                'delivery_date' => Carbon::today()->subDays(rand(0, 365)),
+                'delivery_id' => Str::random(2).'-'.random_int(10000, 99999),
+                'origin' => Str::random(15),
+                'destination' => Str::random(15),
+                'cost' => 'P '.rand(1,9).','.random_int(000, 999),
+                'status' => rand(1,3)
+            ];
+        }
 
-        Delivery::insert($deliveries);
+        foreach ($delivery_data as $data) {
+            Delivery::create($data);
+        }
     }
 }

@@ -3,29 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DeliveriesCollection;
 use Illuminate\Http\Request;
 use App\Models\Delivery;
+use Illuminate\Http\Response;
 
 class DeliveryController extends Controller
 {
     public function index()
     {
-        $deliveries = Delivery::paginate(10);
-        
-        return response()->json($deliveries);
-    }
-
-    public function show()
-    {
         $entries = \Request::get('entries');
 
-        if ($entries) {
-            $deliveries = Delivery::paginate($entries);
-        } else {
-            $deliveries = Delivery::paginate(10);
-        }
+        $page_number = $entries;
 
-        return response()->json($deliveries);
+        return response()->json(
+            new DeliveriesCollection(Delivery::paginate($page_number)),
+            Response::HTTP_OK
+        );
     }
 
     public function search()

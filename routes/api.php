@@ -22,5 +22,4 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 //Deliveries
 Route::get('/deliveries', [DeliveryController::class, 'index'])->name('deliveries');
-Route::get('/deliveries/show', [DeliveryController::class, 'show'])->name('show');
 Route::get('/deliveries/search', [DeliveryController::class, 'search'])->name('search');

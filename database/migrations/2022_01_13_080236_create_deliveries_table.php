@@ -15,7 +15,7 @@ class CreateDeliveriesTable extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->string('delivery_date')->unique();
+            $table->string('delivery_date');
             $table->string('delivery_id')->unique();
             $table->string('origin');
             $table->string('destination');
