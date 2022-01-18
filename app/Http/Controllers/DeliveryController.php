@@ -25,8 +25,13 @@ class DeliveryController extends Controller
     public function search()
     {
         $key = \Request::get('q');
-        $delivery = Delivery::where('delivery_id','LIKE',"%{$key}%")->orWhere('delivery_date','LIKE',"%{$key}%")->orWhere('origin','LIKE',"%{$key}%")
-                ->orWhere('destination','LIKE',"%{$key}%")->orWhere('cost','LIKE',"%{$key}%")->get();
+        $delivery = Delivery::where('delivery_id','LIKE',"%{$key}%")
+        ->orWhere('delivery_date','LIKE',"%{$key}%")
+        ->orWhere('origin','LIKE',"%{$key}%")
+        ->orWhere('destination','LIKE',"%{$key}%")
+        ->orWhere('cost','LIKE',"%{$key}%")
+        ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'In Transit' ELSE 'To Deliver' END) LIKE '%{$key}%'")
+        ->get();
 
         return response()->json(['delivery' => $delivery], 200);
     }
