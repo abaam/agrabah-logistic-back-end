@@ -16,7 +16,7 @@ class DeliveriesCollection extends ResourceCollection
     {
         return [
             'message'       => 'Successfully fetched all deliveries',
-            'deliveries'    => $this->collection,
+            'collection'    => $this->collection,
             'pagination'    => [
                 'total'         => $this->total(),
                 'per_page'      => $this->perPage(),
