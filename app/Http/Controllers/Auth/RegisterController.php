@@ -35,8 +35,8 @@ class RegisterController extends Controller
             $itexmo = array(
                 '1' => $user->phone_number,
                 '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
-                '3' => env('ITEXTMO_API_KEY'),
-                'passwd' => env('ITEXTMO_PW')
+                '3' => env('ITEXMO_API_KEY'),
+                'passwd' => env('ITEXMO_PW')
             );
             curl_setopt($ch, CURLOPT_URL,"https://www.itexmo.com/php_api/api.php");
             curl_setopt($ch, CURLOPT_POST, 1);
