@@ -30,6 +30,31 @@ class RegisterController extends Controller
             $user->pin = $pin;
             $user->save();
 
+            //OTP Sending thru iTextMo
+            $ch = curl_init();
+            $itexmo = array(
+                '1' => $user->phone_number,
+                '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
+                '3' => env('ITEXTMO_API_KEY'),
+                'passwd' => env('ITEXTMO_PW')
+            );
+            curl_setopt($ch, CURLOPT_URL,"https://www.itexmo.com/php_api/api.php");
+            curl_setopt($ch, CURLOPT_POST, 1);
+
+            //Send the parameters set above with the request
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($itexmo));
+
+            // Receive response from server
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $output = curl_exec($ch);
+            curl_close ($ch);
+
+            // Show the server response
+            // echo $output;
+
+            // Login registered user 
+            Auth::loginUsingId($user->id);
+
             return response()->json([
                 'message' => 'You are successfully registered. Kindly check your inbox for your verification code.'
             ]);
