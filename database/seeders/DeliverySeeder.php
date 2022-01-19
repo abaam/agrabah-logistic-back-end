@@ -26,6 +26,8 @@ class DeliverySeeder extends Seeder
                 'origin' => Str::random(15),
                 'destination' => Str::random(15),
                 'cost' => 'P '.rand(1,9).','.random_int(000, 999),
+                'weight' => rand(1,9).' '.Str::random(2),
+                'description' => Str::random(15),
                 'status' => rand(1,3)
             ];
         }
