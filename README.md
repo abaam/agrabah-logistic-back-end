@@ -1,6 +1,10 @@
 # Agrabah Logistics
 
 ```
+git clone https://github.com/abaam/grabah-logistic-back-end
+```
+
+```
 composer install
 ```
 
