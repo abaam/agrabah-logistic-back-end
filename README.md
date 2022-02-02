@@ -1,1 +1,17 @@
-# grabah-logistic-back-end
+# Agrabah Logistics
+
+```
+composer install
+```
+
+```
+cp .env.example .env
+```
+
+```
+php artisan key:generate
+```
+
+```
+php artisan serve
+```
