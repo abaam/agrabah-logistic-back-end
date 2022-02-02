@@ -16,7 +16,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-##Create your database and update the database configuration in your env
+## Create your database and update the database configuration in your env
 
 ```
 php artisan migrate
