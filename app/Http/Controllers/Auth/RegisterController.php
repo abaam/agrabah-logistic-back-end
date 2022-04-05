@@ -56,7 +56,8 @@ class RegisterController extends Controller
             Auth::loginUsingId($user->id);
 
             return response()->json([
-                'message' => 'You are successfully registered. Kindly check your inbox for your verification code.'
+                'message' => 'You are successfully registered. Kindly check your inbox for your verification code.',
+                'phone_number' => $request->phone_number
             ]);
 
         }
