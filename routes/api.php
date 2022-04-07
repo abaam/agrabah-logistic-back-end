@@ -22,6 +22,7 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout']);
 Route::post('/verify', [VerificationController::class, 'verify'])->name('verify');
+Route::post('/resend', [VerificationController::class, 'resend'])->name('resend');
 
 Route::group(['prefix' => 'deliveries', 'middleware' => ['web']], function () {
 	//Deliveries

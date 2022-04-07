@@ -43,6 +43,7 @@ class LoginController extends Controller
                 'access_token' => $token,
                 'token_type' => 'Bearer',
                 'role' => $not_verified->register_as,
+                'id' => $not_verified->id,
             ];
         }
 
