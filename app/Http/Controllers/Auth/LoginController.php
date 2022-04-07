@@ -26,6 +26,7 @@ class LoginController extends Controller
 
         $token = $this->guard()->user()->createToken('auth-token')->plainTextToken;
         $verified = User::where('phone_number', $request->phone_number)->where('verified', 1)->first();
+        $not_verified = User::where('phone_number', $request->phone_number)->where('verified', 0)->first();
 
         if($verified){
             $response = [
@@ -41,7 +42,7 @@ class LoginController extends Controller
                 'phone_number' => $request->phone_number,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'role' => $verified->register_as,
+                'role' => $not_verified->register_as,
             ];
         }
 

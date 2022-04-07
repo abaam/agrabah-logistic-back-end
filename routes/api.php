@@ -23,7 +23,7 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout']);
 Route::post('/verify', [VerificationController::class, 'verify'])->name('verify');
 
-Route::group(['prefix' => 'deliveries', 'middleware' => ['auth:sanctum']], function () {
+Route::group(['prefix' => 'deliveries', 'middleware' => ['web']], function () {
 	//Deliveries
 	Route::get('/', [DeliveryController::class, 'index'])->name('deliveries');
 	Route::get('search', [DeliveryController::class, 'search'])->name('search');
