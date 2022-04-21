@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class DeliveriesCollection extends ResourceCollection
+class BookingsCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -15,7 +15,7 @@ class DeliveriesCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'message'       => 'Successfully fetched all deliveries',
+            'message'       => 'Successfully fetched all bookings',
             'collection'    => $this->collection,
             'pagination'    => [
                 'total'         => $this->total(),
