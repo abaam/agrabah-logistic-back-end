@@ -33,6 +33,7 @@ class LoginController extends Controller
                 'verified' => true,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
+                'csrf_token' => csrf_token(),
                 'role' => $verified->register_as,
             ];
         } else {
@@ -42,6 +43,7 @@ class LoginController extends Controller
                 'phone_number' => $request->phone_number,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
+                'csrf_token' => csrf_token(),
                 'role' => $not_verified->register_as,
                 'id' => $not_verified->id,
             ];

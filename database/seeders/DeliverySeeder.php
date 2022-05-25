@@ -21,14 +21,8 @@ class DeliverySeeder extends Seeder
     {   
         for ($i=0; $i < 150; $i++) {
             $delivery_data[] = [
-                'delivery_date' => Carbon::today()->subDays(rand(0, 365)),
-                'delivery_id' => Str::random(2).'-'.random_int(10000, 99999),
-                'origin' => Str::random(15),
-                'destination' => Str::random(15),
-                'cost' => 'P '.rand(1,9).','.random_int(000, 999),
-                'weight' => rand(1,9).' '.Str::random(2),
-                'description' => Str::random(15),
-                'status' => rand(1,3)
+                'driver_id' => Str::random(2).'-'.random_int(10000, 99999),
+                'booking_id' => Str::random(2).'-'.random_int(10000, 99999),
             ];
         }
 

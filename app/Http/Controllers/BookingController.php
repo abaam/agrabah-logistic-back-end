@@ -41,4 +41,10 @@ class BookingController extends Controller
 
         return response()->json(['bookings' => $bookings], 200);
     }
+
+    public function create(Request $request)
+    {
+        dd($request);
+        return response()->json(['success'=>'You have successfully create a booking.']);
+    }
 }

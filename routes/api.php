@@ -25,7 +25,8 @@ Route::post('/verify', [VerificationController::class, 'verify'])->name('verify'
 Route::post('/resend', [VerificationController::class, 'resend'])->name('resend');
 
 Route::group(['prefix' => 'bookings', 'middleware' => ['web']], function () {
-	//Deliveries
+	//Booking
 	Route::get('/', [BookingController::class, 'index'])->name('deliveries');
 	Route::get('search', [BookingController::class, 'search'])->name('search');
+	Route::post('create', [BookingController::class, 'create'])->name('create');
 });

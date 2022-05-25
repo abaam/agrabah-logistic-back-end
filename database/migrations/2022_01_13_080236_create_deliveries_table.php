@@ -15,14 +15,8 @@ class CreateDeliveriesTable extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->string('delivery_date');
-            $table->string('delivery_id')->unique();
-            $table->string('origin');
-            $table->string('destination');
-            $table->string('cost');
-            $table->string('weight');
-            $table->longText('description');
-            $table->boolean('status')->default(3)->comment('1 = Delivered, 2 = In Transit, 3 = To Deliver');
+            $table->string('driver_id');
+            $table->string('booking_id');
             $table->timestamps();
         });
     }
