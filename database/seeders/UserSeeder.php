@@ -29,5 +29,13 @@ class UserSeeder extends Seeder
             'pin' => '101010',
             'verified' => 1
         ]);
+
+        User::create([
+            'phone_number' => '09108108999',
+            'password' => bcrypt('admin@123'),
+            'register_as' => 3,
+            'pin' => '111111',
+            'verified' => 1
+        ]);
     }
 }
