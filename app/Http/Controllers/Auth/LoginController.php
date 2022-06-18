@@ -24,14 +24,13 @@ class LoginController extends Controller
             ], 500);
         }
 
-        $token = $this->guard()->user()->createToken('auth-token')->plainTextToken;
         $verified = User::where('phone_number', $request->phone_number)->where('verified', 1)->first();
         $not_verified = User::where('phone_number', $request->phone_number)->where('verified', 0)->first();
 
         if($verified){
             $response = [
                 'verified' => true,
-                'access_token' => $token,
+                'access_token' => Auth::user()->createToken('MyApp')->plainTextToken,
                 'token_type' => 'Bearer',
                 'csrf_token' => csrf_token(),
                 'role' => $verified->register_as,
@@ -41,7 +40,7 @@ class LoginController extends Controller
                 'verified' => false,
                 'message' => 'Account has not been verified yet.',
                 'phone_number' => $request->phone_number,
-                'access_token' => $token,
+                'access_token' => Auth::user()->createToken('MyApp')->plainTextToken,
                 'token_type' => 'Bearer',
                 'csrf_token' => csrf_token(),
                 'role' => $not_verified->register_as,

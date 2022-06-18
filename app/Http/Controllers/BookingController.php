@@ -20,7 +20,7 @@ class BookingController extends Controller
         $to_receive = Booking::where('status', 2)->orderBy('date_time', 'ASC')->get();
         $delivered = Booking::where('status', 1)->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
+        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200)->header("Access-Control-Allow-Origin",  "*");
     }
 
     public function search()
@@ -39,7 +39,7 @@ class BookingController extends Controller
 
         $bookings = new BookingsCollection($Booking);
 
-        return response()->json(['bookings' => $bookings], 200);
+        return response()->json(['bookings' => $bookings], 200)->header("Access-Control-Allow-Origin",  "*");
     }
 
     public function create(Request $request)

@@ -24,7 +24,7 @@ Route::post('/logout', [LoginController::class, 'logout']);
 Route::post('/verify', [VerificationController::class, 'verify'])->name('verify');
 Route::post('/resend', [VerificationController::class, 'resend'])->name('resend');
 
-Route::group(['prefix' => 'bookings', 'middleware' => ['web']], function () {
+Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], function () {
 	//Booking
 	Route::get('/', [BookingController::class, 'index'])->name('deliveries');
 	Route::get('search', [BookingController::class, 'search'])->name('search');
