@@ -20,7 +20,7 @@ class BookingController extends Controller
         $to_receive = Booking::where('status', 2)->orderBy('date_time', 'ASC')->get();
         $delivered = Booking::where('status', 1)->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200)->header("Access-Control-Allow-Origin",  "*");
+        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
     }
 
     public function search()
@@ -30,19 +30,26 @@ class BookingController extends Controller
         $page_number = $entries;
 
         $Booking = Booking::where('package_item','LIKE',"%{$key}%")
+        ->orWhere('package_item','LIKE',"%{$key}%")
+        ->orWhere('package_quantity','LIKE',"%{$key}%")
+        ->orWhere('package_unit','LIKE',"%{$key}%")
+        ->orWhere('package_note','LIKE',"%{$key}%")
+        ->orWhere('receiver_name','LIKE',"%{$key}%")
+        ->orWhere('receiver_contact','LIKE',"%{$key}%")
         ->orWhere('vehicle_type','LIKE',"%{$key}%")
         ->orWhere('drop_off','LIKE',"%{$key}%")
-        ->orWhere('pick_up','LIKE',"%{$key}%")
         ->orWhere('date_time','LIKE',"%{$key}%")
+        ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' END) LIKE '%{$key}%'")
+        ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
         ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' ELSE 'To Ship' END) LIKE '%{$key}%'")
         ->paginate($page_number);
 
         $bookings = new BookingsCollection($Booking);
 
-        return response()->json(['bookings' => $bookings], 200)->header("Access-Control-Allow-Origin",  "*");
+        return response()->json(['bookings' => $bookings], 200);
     }
 
-    public function create(Request $request)
+    public function store(Request $request)
     {
         dd($request);
         return response()->json(['success'=>'You have successfully create a booking.']);
