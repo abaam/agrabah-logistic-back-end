@@ -18,6 +18,10 @@ use App\Http\Controllers\VerificationController;
 |
 */
 
+Route::get('/something', function()  {
+	echo 'THis is something';
+});
+
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout']);
@@ -28,5 +32,5 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	//Booking
 	Route::get('/', [BookingController::class, 'index'])->name('deliveries');
 	Route::get('search', [BookingController::class, 'search'])->name('search');
-	Route::post('create', [BookingController::class, 'create'])->name('create');
+	Route::post('store', [BookingController::class, 'store'])->name('store');
 });
