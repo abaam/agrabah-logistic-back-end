@@ -18,10 +18,6 @@ use App\Http\Controllers\VerificationController;
 |
 */
 
-Route::get('/something', function()  {
-	echo 'THis is something';
-});
-
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
