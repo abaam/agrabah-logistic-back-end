@@ -51,7 +51,7 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
-        dd($request);
-        return response()->json(['success'=>'You have successfully create a booking.']);
+        
+        return response()->json($request);
     }
 }
