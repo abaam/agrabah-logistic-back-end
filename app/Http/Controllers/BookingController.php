@@ -23,6 +23,12 @@ class BookingController extends Controller
         return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
     }
 
+    public function bookingDetails($id)
+    {
+        $booking = Booking::find($id);
+        return response()->json($booking);
+    }
+
     public function search()
     {
         $key = \Request::get('q');
@@ -50,7 +56,33 @@ class BookingController extends Controller
     }
 
     public function store(Request $request)
-    {
-        return response()->json($request['arrayField']);
+    {   
+        $input_names = array_column($request['booking_form'], 0);
+        $booking_form = array_combine($input_names, $request['booking_form']);
+
+        $booking = new Booking();
+        $booking->package_item = $booking_form['package_item'][1];
+        $booking->package_quantity = $booking_form['package_quantity'][1];
+        $booking->package_unit = $booking_form['package_unit'][1];
+        $booking->package_note = $booking_form['package_note'][1];
+        $booking->receiver_name = $booking_form['receiver_name'][1];
+        $booking->receiver_contact = $booking_form['contact_number'][1];
+        $booking->vehicle_type = $booking_form['vehicle_form'][1];
+        $booking->pick_up = $booking_form['pick_up'][1];
+        $booking->drop_off = $booking_form['drop_off'][1];
+        $booking->date_time = $booking_form['date_time'][1];
+
+        if ($booking_form['payment_method'][1] == 'Paymaya') {
+            $payment_method = 0;
+        }else{
+            $payment_method = 1;
+        }
+        $booking->payment_method = $payment_method;
+        $booking->payment_status = 0;
+        $booking->status = 3;
+
+        $booking->save();
+
+        return response()->json('You have successfully booked a delivery.');
     }
 }

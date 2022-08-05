@@ -28,5 +28,6 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	//Booking
 	Route::get('/', [BookingController::class, 'index'])->name('deliveries');
 	Route::get('search', [BookingController::class, 'search'])->name('search');
+	Route::get('details/{id}', [BookingController::class, 'bookingDetails']);
 	Route::post('store', [BookingController::class, 'store'])->name('store');
 });
