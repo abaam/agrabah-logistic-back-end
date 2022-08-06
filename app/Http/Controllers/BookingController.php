@@ -25,7 +25,7 @@ class BookingController extends Controller
 
     public function bookingDetails($id)
     {
-        $booking = Booking::find($id);
+        $booking = Booking::where('booking_id', $id)->first();
         return response()->json($booking);
     }
 
@@ -61,6 +61,7 @@ class BookingController extends Controller
         $booking_form = array_combine($input_names, $request['booking_form']);
 
         $booking = new Booking();
+        $booking->booking_id = $booking_form['booking_id'][1];
         $booking->package_item = $booking_form['package_item'][1];
         $booking->package_quantity = $booking_form['package_quantity'][1];
         $booking->package_unit = $booking_form['package_unit'][1];
@@ -77,6 +78,8 @@ class BookingController extends Controller
         }else{
             $payment_method = 1;
         }
+
+        $booking->payment_total = $booking_form['payment_total'][1];
         $booking->payment_method = $payment_method;
         $booking->payment_status = 0;
         $booking->status = 3;
@@ -84,5 +87,14 @@ class BookingController extends Controller
         $booking->save();
 
         return response()->json('You have successfully booked a delivery.');
+    }
+
+    public function payBooking(Request $request)
+    {   
+        Booking::where('booking_id', $request['booking_id'])->update([
+            'payment_status' => 1
+        ]);
+
+        return response()->json('Wait for your payment approval. Thank you!');
     }
 }
