@@ -70,7 +70,7 @@ class BookingController extends Controller
         $booking->vehicle_type = $booking_form['vehicle_form'][1];
         $booking->pick_up = $booking_form['pick_up'][1];
         $booking->drop_off = $booking_form['drop_off'][1];
-        $booking->date_time = $booking_form['date_time'][1];
+        $booking->date_time = date('F j, Y h:i A', strtotime($booking_form['date_time'][1]));
 
         if ($booking_form['payment_method'][1] == 'Paymaya') {
             $payment_method = 0;
