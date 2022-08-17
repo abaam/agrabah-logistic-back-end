@@ -14,11 +14,24 @@ class BookingController extends Controller
     {
         $entries = \Request::get('entries');
         $page_number = $entries;
-        $bookings = new BookingsCollection(Booking::paginate($page_number));
+        $bookings = new BookingsCollection(Booking::where('payment_status', 0)->orWhere('payment_status', 1)->paginate($page_number));
 
-        $to_ship = Booking::where('status', 3)->orderBy('date_time', 'ASC')->get();
-        $to_receive = Booking::where('status', 2)->orderBy('date_time', 'ASC')->get();
-        $delivered = Booking::where('status', 1)->orderBy('date_time', 'ASC')->get();
+        $to_ship = Booking::where('status', 3)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
+        $to_receive = Booking::where('status', 2)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
+        $delivered = Booking::where('status', 1)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
+
+        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
+    }
+
+    public function transactions()
+    {
+        $entries = \Request::get('entries');
+        $page_number = $entries;
+        $bookings = new BookingsCollection(Booking::where('payment_status', 2)->orWhere('payment_status', 3)->paginate($page_number));
+
+        $to_ship = Booking::where('status', 3)->where('payment_status', 2)->orWhere('payment_status', 3)->orderBy('date_time', 'ASC')->get();
+        $to_receive = Booking::where('status', 2)->where('payment_status', 2)->orWhere('payment_status', 3)->orderBy('date_time', 'ASC')->get();
+        $delivered = Booking::where('status', 1)->where('payment_status', 2)->orWhere('payment_status', 3)->orderBy('date_time', 'ASC')->get();
 
         return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
     }

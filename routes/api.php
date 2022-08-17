@@ -26,7 +26,8 @@ Route::post('/resend', [VerificationController::class, 'resend'])->name('resend'
 
 Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], function () {
 	//Booking
-	Route::get('/', [BookingController::class, 'index'])->name('deliveries');
+	Route::get('/', [BookingController::class, 'index']);
+	Route::get('transactions', [BookingController::class, 'transactions'])->name('transactions');
 	Route::get('search', [BookingController::class, 'search'])->name('search');
 	Route::get('details/{id}', [BookingController::class, 'bookingDetails']);
 	Route::post('store', [BookingController::class, 'store'])->name('store');
