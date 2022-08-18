@@ -16,6 +16,7 @@ class CreateBookingsTable extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->string('booking_id')->unique();
+            $table->string('tracking_id')->unique()->nullable();
             $table->string('package_item');
             $table->string('package_quantity');
             $table->string('package_unit');
