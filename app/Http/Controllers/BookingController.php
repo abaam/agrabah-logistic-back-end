@@ -14,13 +14,14 @@ class BookingController extends Controller
     {
         $entries = \Request::get('entries');
         $page_number = $entries;
-        $bookings = new BookingsCollection(Booking::where('payment_status', 0)->orWhere('payment_status', 1)->paginate($page_number));
+        $bookings_customer = new BookingsCollection(Booking::where('payment_status', 0)->orWhere('payment_status', 1)->paginate($page_number));
+        $bookings_driver = new BookingsCollection(Booking::where('payment_status', 2)->paginate($page_number));
 
         $to_ship = Booking::where('status', 3)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
         $to_receive = Booking::where('status', 2)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
         $delivered = Booking::where('status', 1)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
+        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
     }
 
     public function transactions()
