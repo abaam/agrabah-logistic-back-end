@@ -14,14 +14,19 @@ class BookingController extends Controller
     {
         $entries = \Request::get('entries');
         $page_number = $entries;
-        $bookings_customer = new BookingsCollection(Booking::where('payment_status', 0)->orWhere('payment_status', 1)->paginate($page_number));
+        $bookings_customer = new BookingsCollection(Booking::whereIn('payment_status', [0, 1])->paginate($page_number));
         $bookings_driver = new BookingsCollection(Booking::where('payment_status', 2)->paginate($page_number));
+        $bookings_admin = new BookingsCollection(Booking::where('payment_status', '!=', 1)->paginate($page_number));
 
-        $to_ship = Booking::where('status', 3)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
-        $to_receive = Booking::where('status', 2)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
-        $delivered = Booking::where('status', 1)->where('payment_status', 0)->orWhere('payment_status', 1)->orderBy('date_time', 'ASC')->get();
+        $to_ship = Booking::where('status', 3)->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
+        $to_receive = Booking::where('status', 2)->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
+        $delivered = Booking::where('status', 1)->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
+        $to_ship_admin = Booking::where('status', 3)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
+        $to_receive_admin = Booking::where('status', 2)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
+        $delivered_admin = Booking::where('status', 1)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
+
+        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'bookings_admin' => $bookings_admin, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered, 'to_ship_admin' => $to_ship_admin, 'to_receive_admin' => $to_receive_admin, 'delivered_admin' => $delivered_admin], 200);
     }
 
     public function transactions()
