@@ -32,4 +32,5 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	Route::get('details/{id}', [BookingController::class, 'bookingDetails']);
 	Route::post('store', [BookingController::class, 'store'])->name('store');
 	Route::post('payBooking', [BookingController::class, 'payBooking'])->name('payBooking');
+	Route::post('cancelBooking', [BookingController::class, 'cancelBooking'])->name('cancelBooking');
 });

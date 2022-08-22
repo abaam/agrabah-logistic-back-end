@@ -116,4 +116,13 @@ class BookingController extends Controller
 
         return response()->json('Wait for your payment approval. Thank you!');
     }
+
+    public function cancelBooking(Request $request)
+    {   
+        Booking::where('booking_id', $request['booking_id'])->update([
+            'payment_status' => 3
+        ]);
+
+        return response()->json('Your booking has been cancelled.');
+    }
 }
