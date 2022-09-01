@@ -120,7 +120,8 @@ class BookingController extends Controller
     public function cancelBooking(Request $request)
     {   
         Booking::where('booking_id', $request['booking_id'])->update([
-            'payment_status' => 3
+            'payment_status' => 3,
+            'status' => 4
         ]);
 
         return response()->json('Your booking has been cancelled.');
