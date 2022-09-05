@@ -28,6 +28,7 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	//Booking
 	Route::get('/', [BookingController::class, 'index']);
 	Route::get('transactions', [BookingController::class, 'transactions'])->name('transactions');
+	Route::get('payment-approval', [BookingController::class, 'pendingApproval'])->name('pendingApproval');
 	Route::get('search', [BookingController::class, 'search'])->name('search');
 	Route::get('details/{id}', [BookingController::class, 'bookingDetails']);
 	Route::post('store', [BookingController::class, 'store'])->name('store');

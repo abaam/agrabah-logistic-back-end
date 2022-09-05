@@ -33,13 +33,22 @@ class BookingController extends Controller
     {
         $entries = \Request::get('entries');
         $page_number = $entries;
-        $bookings = new BookingsCollection(Booking::where('payment_status', 2)->orWhere('payment_status', 3)->paginate($page_number));
+        $bookings = new BookingsCollection(Booking::whereIn('payment_status', [2, 3])->paginate($page_number));
 
-        $to_ship = Booking::where('status', 3)->where('payment_status', 2)->orWhere('payment_status', 3)->orderBy('date_time', 'ASC')->get();
-        $to_receive = Booking::where('status', 2)->where('payment_status', 2)->orWhere('payment_status', 3)->orderBy('date_time', 'ASC')->get();
-        $delivered = Booking::where('status', 1)->where('payment_status', 2)->orWhere('payment_status', 3)->orderBy('date_time', 'ASC')->get();
+        $to_ship = Booking::where('status', 3)->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
+        $to_receive = Booking::where('status', 2)->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
+        $delivered = Booking::where('status', 1)->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
 
         return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
+    }
+
+    public function pendingApproval()
+    {
+        $entries = \Request::get('entries');
+        $page_number = $entries;
+        $bookings = new BookingsCollection(Booking::where('payment_status', 1)->paginate($page_number));
+
+        return response()->json(['bookings' => $bookings], 200);
     }
 
     public function bookingDetails($id)
@@ -53,6 +62,8 @@ class BookingController extends Controller
         $key = \Request::get('q');
         $entries = \Request::get('entries');
         $page_number = $entries;
+        $page = \Request::get('page');
+        $role = \Request::get('role');
 
         $Booking = Booking::where('package_item','LIKE',"%{$key}%")
         ->orWhere('package_item','LIKE',"%{$key}%")
@@ -68,6 +79,24 @@ class BookingController extends Controller
         ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
         ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' ELSE 'To Ship' END) LIKE '%{$key}%'")
         ->paginate($page_number);
+
+        if ($page == "booking") {
+            if ($role == "customer") {
+                $Booking->whereIn('payment_status', [0, 1]);
+            } else if ($role == "driver") {
+                $Booking->whereIn('payment_status', 2);
+            } else if ($role == "admin") {
+                $Booking->whereIn('payment_status', '!=', 1);
+            }
+        }
+
+        if ($page == "transaction") {
+            $Booking->whereIn('payment_status', [2, 3]);
+        }
+
+        if ($page == "pending_approval") {
+            $Booking->where('payment_status','1');
+        }
 
         $bookings = new BookingsCollection($Booking);
 
