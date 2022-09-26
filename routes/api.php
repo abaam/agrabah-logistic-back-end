@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\UserProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,4 +35,9 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	Route::post('store', [BookingController::class, 'store'])->name('store');
 	Route::post('payBooking', [BookingController::class, 'payBooking'])->name('payBooking');
 	Route::post('cancelBooking', [BookingController::class, 'cancelBooking'])->name('cancelBooking');
+});
+
+Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {
+	//User
+	Route::get('profile', [UserProfileController::class, 'show'])->name('profile');
 });
