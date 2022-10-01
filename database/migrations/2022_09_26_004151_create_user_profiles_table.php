@@ -19,9 +19,15 @@ class CreateUserProfilesTable extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
+            $table->string('name_extension')->nullable();
             $table->string('photo');
             $table->string('email');
-            $table->string('address');
+            $table->string('house_number')->nullable();
+            $table->string('street')->nullable();
+            $table->string('barangay');
+            $table->string('city');
+            $table->string('province');
+            $table->string('zip_code');
             $table->timestamps();
         });
     }
