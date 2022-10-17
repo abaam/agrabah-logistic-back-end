@@ -35,6 +35,8 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	Route::post('store', [BookingController::class, 'store'])->name('store');
 	Route::post('payBooking', [BookingController::class, 'payBooking'])->name('payBooking');
 	Route::post('cancelBooking', [BookingController::class, 'cancelBooking'])->name('cancelBooking');
+	Route::post('approvePayment', [BookingController::class, 'approvePayment'])->name('approvePayment');
+	Route::post('acceptBooking', [BookingController::class, 'acceptBooking'])->name('acceptBooking');
 });
 
 Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {

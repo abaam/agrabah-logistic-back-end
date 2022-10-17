@@ -30,7 +30,7 @@ class CreateBookingsTable extends Migration
             $table->string('payment_total');
             $table->string('payment_method')->default(0)->comment('0 = Paymaya, 1 = Gcash');
             $table->boolean('payment_status')->default(0)->comment('0 = Pending, 1 = Pending Approval, 2 = Paid, 3 = Cancelled');
-            $table->boolean('status')->default(3)->comment('1 = Delivered, 2 = To Receive, 3 = To Ship, 4 = Cancelled');
+            $table->boolean('status')->default(3)->comment('1 = Delivered, 2 = To Receive, 3 = To Ship, 4 = Cancelled, 5 = Accepted');
             $table->timestamps();
         });
     }

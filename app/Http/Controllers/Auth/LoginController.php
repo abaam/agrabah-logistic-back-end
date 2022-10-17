@@ -34,6 +34,7 @@ class LoginController extends Controller
                 'token_type' => 'Bearer',
                 'csrf_token' => csrf_token(),
                 'role' => $verified->register_as,
+                'id' => $verified->id,
             ];
         } else {
             $response = [

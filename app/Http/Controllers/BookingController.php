@@ -7,6 +7,8 @@ use App\Http\Resources\BookingsCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Booking;
+use App\Models\Sale;
+use App\Models\Delivery;
 
 class BookingController extends Controller
 {
@@ -18,11 +20,11 @@ class BookingController extends Controller
         $bookings_driver = new BookingsCollection(Booking::where('payment_status', 2)->paginate($page_number));
         $bookings_admin = new BookingsCollection(Booking::where('payment_status', '!=', 1)->paginate($page_number));
 
-        $to_ship = Booking::where('status', 3)->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
+        $to_ship = Booking::where('status', [3, 5])->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
         $to_receive = Booking::where('status', 2)->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
         $delivered = Booking::where('status', 1)->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
 
-        $to_ship_admin = Booking::where('status', 3)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
+        $to_ship_admin = Booking::where('status', [3, 5])->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
         $to_receive_admin = Booking::where('status', 2)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
         $delivered_admin = Booking::where('status', 1)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
 
@@ -35,7 +37,7 @@ class BookingController extends Controller
         $page_number = $entries;
         $bookings = new BookingsCollection(Booking::whereIn('payment_status', [2, 3])->paginate($page_number));
 
-        $to_ship = Booking::where('status', 3)->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
+        $to_ship = Booking::where('status', [3, 5])->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
         $to_receive = Booking::where('status', 2)->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
         $delivered = Booking::where('status', 1)->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
 
@@ -66,7 +68,6 @@ class BookingController extends Controller
         $role = \Request::get('role');
 
         $Booking = Booking::where('package_item','LIKE',"%{$key}%")
-        ->orWhere('package_item','LIKE',"%{$key}%")
         ->orWhere('package_quantity','LIKE',"%{$key}%")
         ->orWhere('package_unit','LIKE',"%{$key}%")
         ->orWhere('package_note','LIKE',"%{$key}%")
@@ -74,10 +75,11 @@ class BookingController extends Controller
         ->orWhere('receiver_contact','LIKE',"%{$key}%")
         ->orWhere('vehicle_type','LIKE',"%{$key}%")
         ->orWhere('drop_off','LIKE',"%{$key}%")
+        ->orWhere('pick_up','LIKE',"%{$key}%")
         ->orWhere('date_time','LIKE',"%{$key}%")
         ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' END) LIKE '%{$key}%'")
         ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
-        ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' ELSE 'To Ship' END) LIKE '%{$key}%'")
+        ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
         ->paginate($page_number);
 
         if ($page == "booking") {
@@ -95,7 +97,7 @@ class BookingController extends Controller
         }
 
         if ($page == "pending_approval") {
-            $Booking->where('payment_status','1');
+            $Booking->where('payment_status', 1)->where('status', '!=', 4);
         }
 
         $bookings = new BookingsCollection($Booking);
@@ -154,5 +156,42 @@ class BookingController extends Controller
         ]);
 
         return response()->json('Your booking has been cancelled.');
+    }
+
+    public function approvePayment(Request $request)
+    {   
+        $booking = new Sale();
+        $booking->booking_id = $request['booking_id'];
+        $booking->first_name = $request['first_name'];
+        $booking->last_name = $request['last_name'];
+        $booking->amount = $request['amount'];
+        $booking->ref_number = $request['ref_number'];
+        
+        $booking->save();
+
+        Booking::where('booking_id', $request['booking_id'])->update([
+            'payment_status' => 2
+        ]);
+
+        return response()->json('The payment has been approved.');
+    }
+
+    public function acceptBooking(Request $request)
+    {   
+        Sale::where('booking_id', $request['booking_id'])->update([
+            'driver_id' => $request['driver_id']
+        ]);
+
+        Booking::where('booking_id', $request['booking_id'])->update([
+            'status' => 5
+        ]);
+
+        $delivery = new Delivery();
+        $delivery->booking_id = $request['booking_id'];
+        $delivery->driver_id = $request['driver_id'];
+        
+        $delivery->save();
+
+        return response()->json('Booking has been successfully accepted.');
     }
 }
