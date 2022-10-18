@@ -37,6 +37,7 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	Route::post('cancelBooking', [BookingController::class, 'cancelBooking'])->name('cancelBooking');
 	Route::post('approvePayment', [BookingController::class, 'approvePayment'])->name('approvePayment');
 	Route::post('acceptBooking', [BookingController::class, 'acceptBooking'])->name('acceptBooking');
+	Route::post('updateTracking', [BookingController::class, 'updateTracking'])->name('updateTracking');
 });
 
 Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {

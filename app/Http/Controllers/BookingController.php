@@ -9,6 +9,9 @@ use Illuminate\Http\Response;
 use App\Models\Booking;
 use App\Models\Sale;
 use App\Models\Delivery;
+use App\Models\TrackingUpdate;
+use App\Models\Tracking;
+use App\Models\UserProfile;
 
 class BookingController extends Controller
 {
@@ -193,5 +196,38 @@ class BookingController extends Controller
         $delivery->save();
 
         return response()->json('Booking has been successfully accepted.');
+    }
+
+    public function updateTracking(Request $request)
+    {   
+        $tracking_id = mt_rand(10000000,99999999);
+        $driver = UserProfile::where('user_id', $request['driver_id'])->first();
+        if ($driver) {
+            $driver_name = $driver->first_name . ' ' . $driver->middle_name . ' ' . $driver->last_name;
+        } else {
+            $driver_name = 'N/A';
+        }
+
+        // $trackingupdate = new TrackingUpdate();
+        // $trackingupdate->tracking_id = $tracking_id;
+        // $trackingupdate->booking_id = $request['booking_id'];
+        // $trackingupdate->driver_name = $driver_name;
+        // $trackingupdate->receiver_name = $request['receiver_name'];
+        // $trackingupdate->tracking_status = $request['tracking_status'];
+        // $trackingupdate->location = $request['location'];
+        // $trackingupdate->save();
+        
+        $tracking = new Tracking();
+        $tracking->tracking_id = $tracking_id;
+        $tracking->booking_id = $request['booking_id'];
+        $tracking->url = $request['url'] .'/tracking/'. $tracking_id;
+        $tracking->save();
+
+
+        // Tracking::where('booking_id', $request['booking_id'])->update([
+        //     'driver_id' => $request['driver_id']
+        // ]);
+
+        return response()->json('Tracking has been successfully updated.');
     }
 }
