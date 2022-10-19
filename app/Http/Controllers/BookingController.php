@@ -148,6 +148,15 @@ class BookingController extends Controller
             'payment_status' => 1
         ]);
 
+        $booking = new Sale();
+        $booking->booking_id = $request['booking_id'];
+        $booking->first_name = $request['first_name'];
+        $booking->last_name = $request['last_name'];
+        $booking->amount = $request['amount'];
+        $booking->ref_number = $request['ref_number'];
+        
+        $booking->save();
+
         return response()->json('Wait for your payment approval. Thank you!');
     }
 
@@ -163,15 +172,6 @@ class BookingController extends Controller
 
     public function approvePayment(Request $request)
     {   
-        $booking = new Sale();
-        $booking->booking_id = $request['booking_id'];
-        $booking->first_name = $request['first_name'];
-        $booking->last_name = $request['last_name'];
-        $booking->amount = $request['amount'];
-        $booking->ref_number = $request['ref_number'];
-        
-        $booking->save();
-
         Booking::where('booking_id', $request['booking_id'])->update([
             'payment_status' => 2
         ]);
