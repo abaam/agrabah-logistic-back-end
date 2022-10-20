@@ -59,7 +59,9 @@ class BookingController extends Controller
     public function bookingDetails($id)
     {
         $booking = Booking::where('booking_id', $id)->first();
-        return response()->json($booking);
+        $tracking = Tracking::where('booking_id', $id)->first();
+
+        return response()->json(['booking' => $booking, 'tracking' => $tracking]);
     }
 
     public function search()
@@ -200,33 +202,66 @@ class BookingController extends Controller
 
     public function updateTracking(Request $request)
     {   
-        $tracking_id = mt_rand(10000000,99999999);
         $driver = UserProfile::where('user_id', $request['driver_id'])->first();
+        $tracking = Tracking::where('booking_id', $request['booking_id'])->first();
+
         if ($driver) {
             $driver_name = $driver->first_name . ' ' . $driver->middle_name . ' ' . $driver->last_name;
         } else {
             $driver_name = 'N/A';
         }
 
-        // $trackingupdate = new TrackingUpdate();
-        // $trackingupdate->tracking_id = $tracking_id;
-        // $trackingupdate->booking_id = $request['booking_id'];
-        // $trackingupdate->driver_name = $driver_name;
-        // $trackingupdate->receiver_name = $request['receiver_name'];
-        // $trackingupdate->tracking_status = $request['tracking_status'];
-        // $trackingupdate->location = $request['location'];
-        // $trackingupdate->save();
-        
-        $tracking = new Tracking();
-        $tracking->tracking_id = $tracking_id;
-        $tracking->booking_id = $request['booking_id'];
-        $tracking->url = $request['url'] .'/tracking/'. $tracking_id;
-        $tracking->save();
+        if ($request['location']) {
+            $location = $request['location'];
+        } else {
+            if ($request['tracking_status'] == 'Item has been picked up by our driver') {
+                $location = $request['pick_up_location'];
+            } else if ($request['tracking_status'] == 'Item has been delivered') {
+                $location = $request['drop_off_location'];
+            } else {
+                $location = 'N/A';
+            }
+        }
+
+        if ($tracking) {
+            $tracking_id = $tracking->tracking_id;
+
+            Tracking::where('tracking_id', $tracking_id)->update([
+                'tracking_id' => $tracking_id
+            ]);
+        } else {
+            $tracking_id = mt_rand(100000000000,999999999999);
+
+            $tracking = new Tracking();
+            $tracking->tracking_id = $tracking_id;
+            $tracking->booking_id = $request['booking_id'];
+            $tracking->url = $request['url'] .'/tracking/'. $tracking_id;
+            $tracking->save();
+        }
+
+        $tracking_update = new TrackingUpdate();
+        $tracking_update->tracking_id = $tracking_id;
+        $tracking_update->booking_id = $request['booking_id'];
+        $tracking_update->driver_name = $driver_name;
+        $tracking_update->receiver_name = $request['receiver_name'];
+        $tracking_update->tracking_status = $request['tracking_status'];
+        $tracking_update->location = $location;
+        $tracking_update->save();
 
 
-        // Tracking::where('booking_id', $request['booking_id'])->update([
-        //     'driver_id' => $request['driver_id']
-        // ]);
+        Booking::where('booking_id', $request['booking_id'])->update([
+            'tracking_id' => $tracking_id
+        ]);
+
+        if ($request['tracking_status'] == 'Item has been delivered') {
+            Booking::where('booking_id', $request['booking_id'])->update([
+                'status' => 1
+            ]);
+        } else {
+            Booking::where('booking_id', $request['booking_id'])->update([
+                'status' => 2
+            ]);
+        }
 
         return response()->json('Tracking has been successfully updated.');
     }

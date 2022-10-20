@@ -17,10 +17,10 @@ class CreateTrackingUpdatesTable extends Migration
             $table->id();
             $table->string('tracking_id');
             $table->string('booking_id');
-            $table->string('driver_name')->nullable();
+            $table->string('driver_name');
             $table->string('receiver_name');
             $table->string('tracking_status');
-            $table->string('location')->nullable();
+            $table->string('location');
             $table->timestamps();
         });
     }
