@@ -130,8 +130,10 @@ class BookingController extends Controller
 
         if ($booking_form['payment_method'][1] == 'Paymaya') {
             $payment_method = 0;
-        }else{
+        } else if ($booking_form['payment_method'][1] == 'Gcash') {
             $payment_method = 1;
+        } else {
+            $payment_method = 2;
         }
 
         $booking->payment_total = $booking_form['payment_total'][1];
