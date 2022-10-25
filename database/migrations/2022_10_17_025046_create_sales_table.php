@@ -17,10 +17,10 @@ class CreateSalesTable extends Migration
             $table->id();
             $table->string('driver_id')->unique()->nullable();
             $table->string('booking_id')->unique();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('full_name')->nullable();
+            $table->string('mobile_number')->nullable();
             $table->string('amount');
-            $table->string('ref_number');
+            $table->string('ref_number')->nullable();
             $table->timestamps();
         });
     }
