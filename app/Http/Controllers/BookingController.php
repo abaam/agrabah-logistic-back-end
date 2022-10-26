@@ -183,14 +183,14 @@ class BookingController extends Controller
             'payment_status' => 1
         ]);
 
-        $booking = new Sale();
-        $booking->booking_id = $request['booking_id'];
-        $booking->full_name = $request['full_name'];
-        $booking->mobile_number = $request['mobile_number'];
-        $booking->amount = $request['amount'];
-        $booking->ref_number = $request['ref_number'];
+        $sale = new Sale();
+        $sale->booking_id = $request['booking_id'];
+        $sale->full_name = $request['full_name'];
+        $sale->mobile_number = $request['mobile_number'];
+        $sale->amount = $request['amount'];
+        $sale->ref_number = $request['ref_number'];
         
-        $booking->save();
+        $sale->save();
 
         return response()->json('Wait for your payment approval. Thank you!');
     }
@@ -296,7 +296,7 @@ class BookingController extends Controller
             ]);
         }
 
-        if ($request['amount']) {
+        if ($request['tracking_status'] == 'Item has been delivered') {
             $sale = new Sale();
             $sale->booking_id = $request['booking_id'];
             $sale->driver_id = $request['driver_id'];
