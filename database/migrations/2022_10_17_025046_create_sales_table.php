@@ -21,6 +21,7 @@ class CreateSalesTable extends Migration
             $table->string('mobile_number')->nullable();
             $table->string('amount');
             $table->string('ref_number')->nullable();
+            $table->string('payment_method')->default(0)->comment('0 = Paymaya, 1 = Gcash, 2 = Cash On Delivery');
             $table->timestamps();
         });
     }

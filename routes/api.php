@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\SaleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,11 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	Route::post('approvePayment', [BookingController::class, 'approvePayment'])->name('approvePayment');
 	Route::post('acceptBooking', [BookingController::class, 'acceptBooking'])->name('acceptBooking');
 	Route::post('updateTracking', [BookingController::class, 'updateTracking'])->name('updateTracking');
+});
+
+Route::group(['prefix' => 'sales', 'middleware' => ['auth:sanctum']], function () {
+	//Sale
+	Route::get('/', [SaleController::class, 'index']);
 });
 
 Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {

@@ -183,12 +183,21 @@ class BookingController extends Controller
             'payment_status' => 1
         ]);
 
+        if ($request['payment_method'] == 'Paymaya') {
+            $payment_method = 0;
+        } else if ($request['payment_method'] == 'GCash') {
+            $payment_method = 1;
+        } else {
+            $payment_method = 2;
+        }
+
         $sale = new Sale();
         $sale->booking_id = $request['booking_id'];
         $sale->full_name = $request['full_name'];
         $sale->mobile_number = $request['mobile_number'];
         $sale->amount = $request['amount'];
         $sale->ref_number = $request['ref_number'];
+        $sale->payment_method = $payment_method;
         
         $sale->save();
 
@@ -296,11 +305,20 @@ class BookingController extends Controller
             ]);
         }
 
+        if ($request['payment_method'] == 'Paymaya') {
+            $payment_method = 0;
+        } else if ($request['payment_method'] == 'GCash') {
+            $payment_method = 1;
+        } else {
+            $payment_method = 2;
+        }
+
         if ($request['tracking_status'] == 'Item has been delivered') {
             $sale = new Sale();
             $sale->booking_id = $request['booking_id'];
             $sale->driver_id = $request['driver_id'];
             $sale->amount = $request['amount'];
+            $sale->payment_method = $payment_method;
             $sale->save();
 
             Booking::where('booking_id', $request['booking_id'])->update([
