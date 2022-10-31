@@ -11,7 +11,7 @@ class SaleController extends Controller
     {
         $driver_id = \Request::get('id');
         $sales = Sale::where('driver_id', $driver_id)->get();
-        $balance = Sale::pluck('amount')->toArray();
+        $balance = Sale::where('driver_id', $driver_id)->pluck('amount')->toArray();
         $balance = array_reduce($balance, function($carry, $item) {
             return $carry + str_replace(',','',$item);
         });

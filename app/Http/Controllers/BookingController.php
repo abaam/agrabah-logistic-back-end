@@ -21,7 +21,7 @@ class BookingController extends Controller
         $page_number = $entries;
         $bookings_customer = new BookingsCollection(Booking::whereIn('status', [2, 3, 5])->whereIn('payment_status', [0, 1, 2])->paginate($page_number));
         $bookings_driver = new BookingsCollection(Booking::whereIn('status', [3])->whereIn('payment_status', [0, 2])->paginate($page_number));
-        $bookings_admin = new BookingsCollection(Booking::where('payment_status', '!=', 1)->paginate($page_number));
+        $bookings_admin = new BookingsCollection(Booking::whereIn('status', [2, 3, 5])->whereIn('payment_status', [0, 2])->paginate($page_number));
 
         $to_ship = Booking::whereIn('status', [3, 5])->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
         $to_receive = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
@@ -30,7 +30,7 @@ class BookingController extends Controller
         $to_ship_driver = Booking::whereIn('status', [3])->whereIn('payment_status', [2, 0])->where('payment_method', 2)->orderBy('date_time', 'ASC')->get();
 
         $to_ship_admin = Booking::where('status', [3, 5])->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
-        $to_receive_admin = Booking::where('status', 2)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
+        $to_receive_admin = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
         $delivered_admin = Booking::where('status', 1)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
 
         return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'bookings_admin' => $bookings_admin, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered, 'to_ship_driver' => $to_ship_driver, 'to_ship_admin' => $to_ship_admin, 'to_receive_admin' => $to_receive_admin, 'delivered_admin' => $delivered_admin], 200);
@@ -327,5 +327,12 @@ class BookingController extends Controller
         }
 
         return response()->json('Tracking has been successfully updated.');
+    }
+
+    public function paymentDetails($id)
+    {
+        $sale = Sale::where('booking_id', $id)->first();
+
+        return response()->json(['sale' => $sale]);
     }
 }

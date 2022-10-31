@@ -34,6 +34,7 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	Route::get('payment-approval', [BookingController::class, 'pendingApproval'])->name('pendingApproval');
 	Route::get('search', [BookingController::class, 'search'])->name('search');
 	Route::get('details/{id}', [BookingController::class, 'bookingDetails']);
+	Route::get('payment/details/{id}', [BookingController::class, 'paymentDetails']);
 	Route::post('store', [BookingController::class, 'store'])->name('store');
 	Route::post('payBooking', [BookingController::class, 'payBooking'])->name('payBooking');
 	Route::post('cancelBooking', [BookingController::class, 'cancelBooking'])->name('cancelBooking');
