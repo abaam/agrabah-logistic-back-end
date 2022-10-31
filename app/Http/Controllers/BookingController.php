@@ -19,41 +19,60 @@ class BookingController extends Controller
     {
         $entries = \Request::get('entries');
         $page_number = $entries;
-        $bookings_customer = new BookingsCollection(Booking::whereIn('payment_status', [0, 1])->paginate($page_number));
-        $bookings_driver = new BookingsCollection(Booking::where('payment_status', 2)->paginate($page_number));
+        $bookings_customer = new BookingsCollection(Booking::whereIn('status', [2, 3, 5])->whereIn('payment_status', [0, 1, 2])->paginate($page_number));
+        $bookings_driver = new BookingsCollection(Booking::whereIn('status', [3])->whereIn('payment_status', [0, 2])->paginate($page_number));
         $bookings_admin = new BookingsCollection(Booking::where('payment_status', '!=', 1)->paginate($page_number));
 
-        $to_ship = Booking::where('status', [3, 5])->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
-        $to_receive = Booking::where('status', 2)->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
-        $delivered = Booking::where('status', 1)->whereIn('payment_status', [0, 1])->orderBy('date_time', 'ASC')->get();
+        $to_ship = Booking::whereIn('status', [3, 5])->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
+        $to_receive = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
+        $delivered = Booking::where('status', 1)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
+
+        $to_ship_driver = Booking::whereIn('status', [3])->whereIn('payment_status', [2, 0])->where('payment_method', 2)->orderBy('date_time', 'ASC')->get();
 
         $to_ship_admin = Booking::where('status', [3, 5])->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
         $to_receive_admin = Booking::where('status', 2)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
         $delivered_admin = Booking::where('status', 1)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'bookings_admin' => $bookings_admin, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered, 'to_ship_admin' => $to_ship_admin, 'to_receive_admin' => $to_receive_admin, 'delivered_admin' => $delivered_admin], 200);
+        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'bookings_admin' => $bookings_admin, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered, 'to_ship_driver' => $to_ship_driver, 'to_ship_admin' => $to_ship_admin, 'to_receive_admin' => $to_receive_admin, 'delivered_admin' => $delivered_admin], 200);
     }
 
     public function transactions()
     {
         $entries = \Request::get('entries');
         $page_number = $entries;
-        $bookings = new BookingsCollection(Booking::whereIn('payment_status', [2, 3])->paginate($page_number));
+        $bookings = new BookingsCollection(Booking::where('status', 1)->whereIn('payment_status', [2, 3])->paginate($page_number));
 
-        $to_ship = Booking::where('status', [3, 5])->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
-        $to_receive = Booking::where('status', 2)->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
-        $delivered = Booking::where('status', 1)->whereIn('payment_status', [2, 3])->orderBy('date_time', 'ASC')->get();
+        $to_receive = Booking::where('status', 2)->whereIn('payment_status', [2, 0])->orderBy('date_time', 'ASC')->get();
+        $delivered = Booking::where('status', 1)->whereIn('payment_status', [2])->orderBy('date_time', 'ASC')->get();
+        $cancelled = Booking::where('status', 4)->whereIn('payment_status', [3])->orderBy('date_time', 'ASC')->get();
 
         return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
+    }
+
+    public function deliveries()
+    {
+        $entries = \Request::get('entries');
+        $page_number = $entries;
+        $bookings = new BookingsCollection(Booking::whereIn('status', [1, 2, 4, 5])->whereIn('payment_status', [0, 2, 3])->paginate($page_number));
+
+        $to_receive = Booking::whereIn('status', [2, 5])->whereIn('payment_status', [2, 0])->orderBy('date_time', 'ASC')->get();
+        $delivered = Booking::where('status', 1)->whereIn('payment_status', [2])->orderBy('date_time', 'ASC')->get();
+        $cancelled = Booking::where('status', 4)->whereIn('payment_status', [3])->orderBy('date_time', 'ASC')->get();
+
+        return response()->json(['bookings' => $bookings, 'to_receive' => $to_receive, 'delivered' => $delivered, 'cancelled' => $cancelled], 200);
     }
 
     public function pendingApproval()
     {
         $entries = \Request::get('entries');
         $page_number = $entries;
-        $bookings = new BookingsCollection(Booking::where('payment_status', 1)->paginate($page_number));
+        $bookings = new BookingsCollection(Booking::where('payment_status', 1)->where('payment_method', '!=', 2)->paginate($page_number));
 
-        return response()->json(['bookings' => $bookings], 200);
+        $to_ship = Booking::where('status', [3, 5])->whereIn('payment_status', [1])->orderBy('date_time', 'ASC')->get();
+        $to_receive = Booking::where('status', 2)->whereIn('payment_status', [1])->orderBy('date_time', 'ASC')->get();
+        $delivered = Booking::where('status', 1)->whereIn('payment_status', [1])->orderBy('date_time', 'ASC')->get();
+
+        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
     }
 
     public function bookingDetails($id)
@@ -61,7 +80,19 @@ class BookingController extends Controller
         $booking = Booking::where('booking_id', $id)->first();
         $tracking = Tracking::where('booking_id', $id)->first();
 
-        return response()->json(['booking' => $booking, 'tracking' => $tracking]);
+        if ($tracking) {
+            $qr_code = $tracking;
+        } else {
+            $qr_code = 'https://example.com';
+        }
+
+        if ($booking->tracking_id) {
+            $booking_has_tracking = 'true';
+        } else {
+            $booking_has_tracking = 'false';
+        }
+
+        return response()->json(['booking' => $booking, 'qr_code' => $qr_code, 'booking_has_tracking' => $booking_has_tracking]);
     }
 
     public function search()
@@ -130,7 +161,7 @@ class BookingController extends Controller
 
         if ($booking_form['payment_method'][1] == 'Paymaya') {
             $payment_method = 0;
-        } else if ($booking_form['payment_method'][1] == 'Gcash') {
+        } else if ($booking_form['payment_method'][1] == 'GCash') {
             $payment_method = 1;
         } else {
             $payment_method = 2;
@@ -152,14 +183,23 @@ class BookingController extends Controller
             'payment_status' => 1
         ]);
 
-        $booking = new Sale();
-        $booking->booking_id = $request['booking_id'];
-        $booking->first_name = $request['first_name'];
-        $booking->last_name = $request['last_name'];
-        $booking->amount = $request['amount'];
-        $booking->ref_number = $request['ref_number'];
+        if ($request['payment_method'] == 'Paymaya') {
+            $payment_method = 0;
+        } else if ($request['payment_method'] == 'GCash') {
+            $payment_method = 1;
+        } else {
+            $payment_method = 2;
+        }
+
+        $sale = new Sale();
+        $sale->booking_id = $request['booking_id'];
+        $sale->full_name = $request['full_name'];
+        $sale->mobile_number = $request['mobile_number'];
+        $sale->amount = $request['amount'];
+        $sale->ref_number = $request['ref_number'];
+        $sale->payment_method = $payment_method;
         
-        $booking->save();
+        $sale->save();
 
         return response()->json('Wait for your payment approval. Thank you!');
     }
@@ -262,6 +302,27 @@ class BookingController extends Controller
         } else {
             Booking::where('booking_id', $request['booking_id'])->update([
                 'status' => 2
+            ]);
+        }
+
+        if ($request['payment_method'] == 'Paymaya') {
+            $payment_method = 0;
+        } else if ($request['payment_method'] == 'GCash') {
+            $payment_method = 1;
+        } else {
+            $payment_method = 2;
+        }
+
+        if ($request['tracking_status'] == 'Item has been delivered') {
+            $sale = new Sale();
+            $sale->booking_id = $request['booking_id'];
+            $sale->driver_id = $request['driver_id'];
+            $sale->amount = $request['amount'];
+            $sale->payment_method = $payment_method;
+            $sale->save();
+
+            Booking::where('booking_id', $request['booking_id'])->update([
+                'payment_status' => 2
             ]);
         }
 

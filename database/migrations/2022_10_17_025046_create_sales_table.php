@@ -15,12 +15,13 @@ class CreateSalesTable extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('driver_id')->unique()->nullable();
-            $table->string('booking_id')->unique();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('driver_id')->nullable();
+            $table->string('booking_id');
+            $table->string('full_name')->nullable();
+            $table->string('mobile_number')->nullable();
             $table->string('amount');
-            $table->string('ref_number');
+            $table->string('ref_number')->nullable();
+            $table->string('payment_method')->default(0)->comment('0 = Paymaya, 1 = Gcash, 2 = Cash On Delivery');
             $table->timestamps();
         });
     }
