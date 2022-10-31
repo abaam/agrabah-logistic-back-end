@@ -52,7 +52,11 @@ class UserProfileController extends Controller
         $user_id = Auth::user()->id;
         $profile = UserProfile::where('user_id', $user_id)->first();
         // print_r($profile);
-        $profile['mobile_number'] = Auth::user()->phone_number;
+        // if(empty($profile)) {
+            // print_r('test');
+            $profile['mobile_number'] = Auth::user()->phone_number;
+        // }
+        
         return response()->json($profile);
     }
 
@@ -91,10 +95,16 @@ class UserProfileController extends Controller
     }
 
     public function storeName(Request $request) {
+        // print_r("Hello World");
         $user_id = Auth::user()->id;
         $user_data = $request['user'];
-        $user = UserProfile::where('user_id', '=', $user_id)->firstOrFail();
-        $profile = UserProfile::find($user->id);
+        $user = UserProfile::where('user_id', '=', $user_id)->first();
+        $profile;
+
+        if(!empty($user)) {
+            $profile = UserProfile::find($user->id);
+        }
+
         if(!empty($profile)) {
             $profile->first_name = $user_data['first_name'];
             $profile->middle_name = $user_data['middle_name'] != "" ? $user_data['middle_name'] : "";
@@ -102,6 +112,8 @@ class UserProfileController extends Controller
             $profile->name_extension = $user_data['name_extension'] != "" ? $user_data['name_extension'] : "";
             $profile->update();
         } else {
+            $profile = new UserProfile;
+            $profile->user_id = $user_id;
             $profile->first_name = $user_data['first_name'];
             $profile->middle_name = $user_data['middle_name'] != "" ? $user_data['name_extension'] : "";
             $profile->last_name = $user_data['last_name'];
@@ -126,11 +138,18 @@ class UserProfileController extends Controller
         $user_id = Auth::user()->id;
         $user_data = $request['user'];
         $user = UserProfile::where('user_id', '=', $user_id)->firstOrFail();
-        $profile = UserProfile::find($user->id);
+        $profile;
+
+        if(!empty($user)) {
+            $profile = UserProfile::find($user->id);
+        }
+
         if(!empty($profile)) {
             $profile->email = $user_data['email'];
             $profile->update();
         } else {
+            $profile = new UserProfile;
+            $profile->user_id = $user_id;
             $profile->first_name = $user_data['first_name'] != "" ? $user_data['first_name'] : "";
             $profile->middle_name = $user_data['middle_name'] != "" ? $user_data['name_extension'] : "";
             $profile->last_name = $user_data['last_name'] != "" ? $user_data['last_name'] : "";
