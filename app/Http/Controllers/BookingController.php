@@ -27,7 +27,7 @@ class BookingController extends Controller
         $to_receive = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
         $delivered = Booking::where('status', 1)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
 
-        $to_ship_driver = Booking::whereIn('status', [3])->whereIn('payment_status', [2, 0])->where('payment_method', 2)->orderBy('date_time', 'ASC')->get();
+        $to_ship_driver = Booking::whereIn('status', [3])->whereIn('payment_status', [2, 0])->orderBy('date_time', 'ASC')->get();
 
         $to_ship_admin = Booking::where('status', [3, 5])->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
         $to_receive_admin = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
@@ -46,7 +46,7 @@ class BookingController extends Controller
         $delivered = Booking::where('status', 1)->whereIn('payment_status', [2])->orderBy('date_time', 'ASC')->get();
         $cancelled = Booking::where('status', 4)->whereIn('payment_status', [3])->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
+        return response()->json(['bookings' => $bookings, 'to_receive' => $to_receive, 'delivered' => $delivered, 'cancelled' => $cancelled], 200);
     }
 
     public function deliveries()
@@ -113,27 +113,102 @@ class BookingController extends Controller
         ->orWhere('drop_off','LIKE',"%{$key}%")
         ->orWhere('pick_up','LIKE',"%{$key}%")
         ->orWhere('date_time','LIKE',"%{$key}%")
-        ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' END) LIKE '%{$key}%'")
+        ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
         ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
         ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
         ->paginate($page_number);
 
         if ($page == "booking") {
-            if ($role == "customer") {
-                $Booking->whereIn('payment_status', [0, 1]);
-            } else if ($role == "driver") {
-                $Booking->whereIn('payment_status', 2);
-            } else if ($role == "admin") {
-                $Booking->whereIn('payment_status', '!=', 1);
+            if ($role == 1) {
+                $Booking = Booking::where('package_item','LIKE',"%{$key}%")
+                ->whereIn('status', [3])
+                ->whereIn('payment_status', [0, 2])
+                ->orWhere('package_quantity','LIKE',"%{$key}%")
+                ->orWhere('package_unit','LIKE',"%{$key}%")
+                ->orWhere('package_note','LIKE',"%{$key}%")
+                ->orWhere('receiver_name','LIKE',"%{$key}%")
+                ->orWhere('receiver_contact','LIKE',"%{$key}%")
+                ->orWhere('vehicle_type','LIKE',"%{$key}%")
+                ->orWhere('drop_off','LIKE',"%{$key}%")
+                ->orWhere('pick_up','LIKE',"%{$key}%")
+                ->orWhere('date_time','LIKE',"%{$key}%")
+                ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+                ->paginate($page_number);
+            } else if ($role == 2) {
+                $Booking = Booking::where('package_item','LIKE',"%{$key}%")
+                ->whereIn('status', [2, 3, 5])
+                ->whereIn('payment_status', [0, 1, 2])
+                ->orWhere('package_quantity','LIKE',"%{$key}%")
+                ->orWhere('package_unit','LIKE',"%{$key}%")
+                ->orWhere('package_note','LIKE',"%{$key}%")
+                ->orWhere('receiver_name','LIKE',"%{$key}%")
+                ->orWhere('receiver_contact','LIKE',"%{$key}%")
+                ->orWhere('vehicle_type','LIKE',"%{$key}%")
+                ->orWhere('drop_off','LIKE',"%{$key}%")
+                ->orWhere('pick_up','LIKE',"%{$key}%")
+                ->orWhere('date_time','LIKE',"%{$key}%")
+                ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+                ->paginate($page_number);
+            } else if ($role == 3) {
+                $Booking = Booking::where('package_item','LIKE',"%{$key}%")
+                ->whereIn('status', [2, 3, 5])
+                ->whereIn('payment_status', [0, 2])
+                ->orWhere('package_quantity','LIKE',"%{$key}%")
+                ->orWhere('package_unit','LIKE',"%{$key}%")
+                ->orWhere('package_note','LIKE',"%{$key}%")
+                ->orWhere('receiver_name','LIKE',"%{$key}%")
+                ->orWhere('receiver_contact','LIKE',"%{$key}%")
+                ->orWhere('vehicle_type','LIKE',"%{$key}%")
+                ->orWhere('drop_off','LIKE',"%{$key}%")
+                ->orWhere('pick_up','LIKE',"%{$key}%")
+                ->orWhere('date_time','LIKE',"%{$key}%")
+                ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+                ->paginate($page_number);
             }
         }
 
         if ($page == "transaction") {
-            $Booking->whereIn('payment_status', [2, 3]);
+            $Booking = Booking::where('package_item','LIKE',"%{$key}%")
+            ->where('status', 1)
+            ->whereIn('payment_status', [2, 3])
+            ->orWhere('package_quantity','LIKE',"%{$key}%")
+            ->orWhere('package_unit','LIKE',"%{$key}%")
+            ->orWhere('package_note','LIKE',"%{$key}%")
+            ->orWhere('receiver_name','LIKE',"%{$key}%")
+            ->orWhere('receiver_contact','LIKE',"%{$key}%")
+            ->orWhere('vehicle_type','LIKE',"%{$key}%")
+            ->orWhere('drop_off','LIKE',"%{$key}%")
+            ->orWhere('pick_up','LIKE',"%{$key}%")
+            ->orWhere('date_time','LIKE',"%{$key}%")
+            ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
+            ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
+            ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+            ->paginate($page_number);
         }
 
         if ($page == "pending_approval") {
-            $Booking->where('payment_status', 1)->where('status', '!=', 4);
+            $Booking = Booking::where('package_item','LIKE',"%{$key}%")
+            ->where('payment_status', 1)
+            ->where('payment_method', '!=', 2)
+            ->orWhere('package_quantity','LIKE',"%{$key}%")
+            ->orWhere('package_unit','LIKE',"%{$key}%")
+            ->orWhere('package_note','LIKE',"%{$key}%")
+            ->orWhere('receiver_name','LIKE',"%{$key}%")
+            ->orWhere('receiver_contact','LIKE',"%{$key}%")
+            ->orWhere('vehicle_type','LIKE',"%{$key}%")
+            ->orWhere('drop_off','LIKE',"%{$key}%")
+            ->orWhere('pick_up','LIKE',"%{$key}%")
+            ->orWhere('date_time','LIKE',"%{$key}%")
+            ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
+            ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
+            ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+            ->paginate($page_number);
         }
 
         $bookings = new BookingsCollection($Booking);

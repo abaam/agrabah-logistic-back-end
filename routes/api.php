@@ -46,6 +46,8 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 Route::group(['prefix' => 'sales', 'middleware' => ['auth:sanctum']], function () {
 	//Sale
 	Route::get('/', [SaleController::class, 'index']);
+	Route::get('wallet', [SaleController::class, 'wallet'])->name('wallet');
+	Route::get('search', [SaleController::class, 'search'])->name('search');
 });
 
 Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {
