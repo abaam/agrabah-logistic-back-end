@@ -388,7 +388,7 @@ class BookingController extends Controller
             $payment_method = 2;
         }
 
-        if ($request['tracking_status'] == 'Item has been delivered') {
+        if ($request['tracking_status'] == 'Item has been delivered' && $request['payment_method'] == 'Cash On Delivery') {
             $sale = new Sale();
             $sale->booking_id = $request['booking_id'];
             $sale->driver_id = $request['driver_id'];
