@@ -169,4 +169,45 @@ class UserProfileController extends Controller
 
         return response()->json($profile);
     }
+
+    public function storeAddress(Request $request) {
+        $user_id = Auth::user()->id;
+        $user_data = $request['user'];
+        $user = UserProfile::where('user_id', '=', $user_id)->firstOrFail();
+        $profile;
+
+        if(!empty($user)) {
+            $profile = UserProfile::find($user->id);
+        }
+
+        if(!empty($profile)) {
+            $profile->house_number = $user_data['house_number'] != "" ? $user_data['house_number'] : "";
+            $profile->street = $user_data['street'] != "" ? $user_data['street'] : "";
+            $profile->barangay = $user_data['barangay'] != "" ? $user_data['barangay'] : "";
+            $profile->city = $user_data['city'] != "" ? $user_data['city'] : "";
+            $profile->province = $user_data['province'] != "" ? $user_data['province'] : "";
+            $profile->zip_code = $user_data['zip_code'] != "" ? $user_data['zip_code'] : "";
+            $profile->update();
+        } else {
+            $profile = new UserProfile;
+            $profile->user_id = $user_id;
+            $profile->first_name = $user_data['first_name'] != "" ? $user_data['first_name'] : "";
+            $profile->middle_name = $user_data['middle_name'] != "" ? $user_data['name_extension'] : "";
+            $profile->last_name = $user_data['last_name'] != "" ? $user_data['last_name'] : "";
+            $profile->name_extension = $user_data['name_extension'] != "" ? $user_data['name_extension'] : "";
+            $profile->photo = $user_data['photo'] != "" ? $user_data['photo'] : "";
+            $profile->email = $user_data['email'] != "" ? $user_data['email'] : "";
+            $profile->house_number = $user_data['house_number'] != "" ? $user_data['house_number'] : "";
+            $profile->street = $user_data['street'] != "" ? $user_data['street'] : "";
+            $profile->barangay = $user_data['barangay'] != "" ? $user_data['barangay'] : "";
+            $profile->city = $user_data['city'] != "" ? $user_data['city'] : "";
+            $profile->province = $user_data['province'] != "" ? $user_data['province'] : "";
+            $profile->zip_code = $user_data['zip_code'] != "" ? $user_data['zip_code'] : "";
+            $profile->save();
+        }
+        
+        $profile['mobile_number'] = Auth::user()->phone_number;
+
+        return response()->json($profile);
+    }
 }
