@@ -281,9 +281,18 @@ class BookingController extends Controller
 
     public function cancelBooking(Request $request)
     {   
+        $driver = UserProfile::where('user_id', $request['driver_id'])->first();
+
+        if ($driver) {
+            $driver_name = $driver->first_name . ' ' . $driver->middle_name . ' ' . $driver->last_name;
+        } else {
+            $driver_name = 'N/A';
+        }
+
         Booking::where('booking_id', $request['booking_id'])->update([
             'payment_status' => 3,
-            'status' => 4
+            'status' => 4,
+            'driver_name' => $driver_name
         ]);
 
         return response()->json('Your booking has been cancelled.');
@@ -398,6 +407,12 @@ class BookingController extends Controller
 
             Booking::where('booking_id', $request['booking_id'])->update([
                 'payment_status' => 2
+            ]);
+        }
+
+        if ($request['tracking_status'] == 'Item has been delivered' && $request['payment_method'] != 'Cash On Delivery') {
+            Booking::where('booking_id', $request['booking_id'])->update([
+                'driver_name' => $driver_name
             ]);
         }
 

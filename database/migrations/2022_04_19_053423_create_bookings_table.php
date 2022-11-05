@@ -17,6 +17,7 @@ class CreateBookingsTable extends Migration
             $table->id();
             $table->string('booking_id')->unique();
             $table->string('tracking_id')->unique()->nullable();
+            $table->string('driver_name')->nullable();
             $table->string('package_item');
             $table->string('package_quantity');
             $table->string('package_unit');
