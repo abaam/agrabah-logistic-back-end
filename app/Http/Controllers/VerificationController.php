@@ -35,26 +35,72 @@ class VerificationController extends Controller
         $user->pin = $pin;
         $user->update();
 
+        // print_r($user);
 
-        //OTP Sending thru iTextMo
-        $ch = curl_init();
+
+        // //OTP Sending thru iTextMo
+        // $ch = curl_init();
+        // $itexmo = array(
+        //     '1' => $user->phone_number,
+        //     '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
+        //     '3' => env('ITEXMO_API_KEY'),
+        //     'passwd' => env('ITEXMO_PW')
+        // );
+        // curl_setopt($ch, CURLOPT_URL,"https://www.itexmo.com/php_api/api.php");
+        // curl_setopt($ch, CURLOPT_POST, 1);
+
+        // //Send the parameters set above with the request
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($itexmo));
+
+        // // Receive response from server
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // $output = curl_exec($ch);
+        // curl_close ($ch);
+
+        // // Show the server response
+        // return($output);
+
+        // $ch = curl_init();
+        // $itexmo = array(
+        //     '1' => "09932913899",
+        //     '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
+        //     '3' => env('ITEXMO_API_KEY'),
+        //     'passwd' => env('ITEXMO_PW')
+        // );
+        // curl_setopt($ch, CURLOPT_URL,"https://www.itexmo.com/php_api/api.php");
+        // curl_setopt($ch, CURLOPT_POST, 1);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($itexmo));
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // $output = curl_exec($ch);
+        // curl_close ($ch); 
+
+        $url = 'https://www.itexmo.com/php_api/api.php';
         $itexmo = array(
-            '1' => $user->phone_number,
-            '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
-            '3' => env('ITEXMO_API_KEY'),
-            'passwd' => env('ITEXMO_PW')
+                '1' => $user->phone_number,
+                '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
+                '3' => env('ITEXMO_API_KEY'),
+                'passwd' => env('ITEXMO_PW')
+            );
+        $param = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($itexmo),
+            ),
         );
-        curl_setopt($ch, CURLOPT_URL,"https://www.itexmo.com/php_api/api.php");
-        curl_setopt($ch, CURLOPT_POST, 1);
+        $context  = stream_context_create($param);
+        $output = file_get_contents($url, false, $context);
 
-        //Send the parameters set above with the request
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($itexmo));
+        // echo($output);
 
-        // Receive response from server
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $output = curl_exec($ch);
-        curl_close ($ch);
+        if($output == 0) {
+            $status = true;
+            $message = "Success! Your new pin has been sent.";
+        } else {
+            $status = false;
+            $message = "Error detected! Please wait a few minutes before you try again.";
+        }
 
-        return response()->json(['success' => true, 'message' => 'Success! Your new pin has been sent.']);
+        return response()->json(['success' => $status, 'message' => $message]);
     }
 }

@@ -55,4 +55,5 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function (
 	Route::get('profile', [UserProfileController::class, 'show'])->name('profile');
 	Route::post('storeName', [UserProfileController::class, 'storeName'])->name('storeName');
 	Route::post('storeEmail', [UserProfileController::class, 'storeEmail'])->name('storeEmail');
+	Route::post('storeAddress', [UserProfileController::class, 'storeAddress'])->name('storeAddress');
 });
