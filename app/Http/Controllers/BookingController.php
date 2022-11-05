@@ -23,17 +23,17 @@ class BookingController extends Controller
         $bookings_driver = new BookingsCollection(Booking::whereIn('status', [3])->whereIn('payment_status', [0, 2])->paginate($page_number));
         $bookings_admin = new BookingsCollection(Booking::whereIn('status', [2, 3, 5])->whereIn('payment_status', [0, 2])->paginate($page_number));
 
-        $to_ship = Booking::whereIn('status', [3, 5])->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
+        $for_pick_up = Booking::whereIn('status', [3, 5])->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
         $to_receive = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
         $delivered = Booking::where('status', 1)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
 
-        $to_ship_driver = Booking::whereIn('status', [3])->whereIn('payment_status', [2, 0])->orderBy('date_time', 'ASC')->get();
+        $for_pick_up_driver = Booking::whereIn('status', [3])->whereIn('payment_status', [2, 0])->orderBy('date_time', 'ASC')->get();
 
-        $to_ship_admin = Booking::where('status', [3, 5])->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
+        $for_pick_up_admin = Booking::where('status', [3, 5])->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
         $to_receive_admin = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
         $delivered_admin = Booking::where('status', 1)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'bookings_admin' => $bookings_admin, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered, 'to_ship_driver' => $to_ship_driver, 'to_ship_admin' => $to_ship_admin, 'to_receive_admin' => $to_receive_admin, 'delivered_admin' => $delivered_admin], 200);
+        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'bookings_admin' => $bookings_admin, 'for_pick_up' => $for_pick_up, 'to_receive' => $to_receive, 'delivered' => $delivered, 'for_pick_up_driver' => $for_pick_up_driver, 'for_pick_up_admin' => $for_pick_up_admin, 'to_receive_admin' => $to_receive_admin, 'delivered_admin' => $delivered_admin], 200);
     }
 
     public function transactions()
@@ -68,11 +68,11 @@ class BookingController extends Controller
         $page_number = $entries;
         $bookings = new BookingsCollection(Booking::where('payment_status', 1)->where('payment_method', '!=', 2)->paginate($page_number));
 
-        $to_ship = Booking::where('status', [3, 5])->whereIn('payment_status', [1])->orderBy('date_time', 'ASC')->get();
+        $for_pick_up = Booking::where('status', [3, 5])->whereIn('payment_status', [1])->orderBy('date_time', 'ASC')->get();
         $to_receive = Booking::where('status', 2)->whereIn('payment_status', [1])->orderBy('date_time', 'ASC')->get();
         $delivered = Booking::where('status', 1)->whereIn('payment_status', [1])->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings' => $bookings, 'to_ship' => $to_ship, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
+        return response()->json(['bookings' => $bookings, 'for_pick_up' => $for_pick_up, 'to_receive' => $to_receive, 'delivered' => $delivered], 200);
     }
 
     public function bookingDetails($id)
@@ -115,7 +115,7 @@ class BookingController extends Controller
         ->orWhere('date_time','LIKE',"%{$key}%")
         ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
         ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
-        ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+        ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'For Pickup' ELSE 'Cancelled' END) LIKE '%{$key}%'")
         ->paginate($page_number);
 
         if ($page == "booking") {
@@ -134,7 +134,7 @@ class BookingController extends Controller
                 ->orWhere('date_time','LIKE',"%{$key}%")
                 ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
                 ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
-                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'For Pickup' ELSE 'Cancelled' END) LIKE '%{$key}%'")
                 ->paginate($page_number);
             } else if ($role == 2) {
                 $Booking = Booking::where('package_item','LIKE',"%{$key}%")
@@ -151,7 +151,7 @@ class BookingController extends Controller
                 ->orWhere('date_time','LIKE',"%{$key}%")
                 ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
                 ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
-                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'For Pickup' ELSE 'Cancelled' END) LIKE '%{$key}%'")
                 ->paginate($page_number);
             } else if ($role == 3) {
                 $Booking = Booking::where('package_item','LIKE',"%{$key}%")
@@ -168,7 +168,7 @@ class BookingController extends Controller
                 ->orWhere('date_time','LIKE',"%{$key}%")
                 ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
                 ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
-                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+                ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'For Pickup' ELSE 'Cancelled' END) LIKE '%{$key}%'")
                 ->paginate($page_number);
             }
         }
@@ -188,7 +188,7 @@ class BookingController extends Controller
             ->orWhere('date_time','LIKE',"%{$key}%")
             ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
             ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
-            ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+            ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'For Pickup' ELSE 'Cancelled' END) LIKE '%{$key}%'")
             ->paginate($page_number);
         }
 
@@ -207,7 +207,7 @@ class BookingController extends Controller
             ->orWhere('date_time','LIKE',"%{$key}%")
             ->orWhereRaw("(CASE WHEN payment_method = 0 THEN 'Paymaya' WHEN payment_method = 1 THEN 'Gcash' WHEN payment_method = 2 THEN 'Cash On Delivery' END) LIKE '%{$key}%'")
             ->orWhereRaw("(CASE WHEN payment_status = 0 THEN 'Pending' WHEN payment_status = 1 THEN 'Paid' END) LIKE '%{$key}%'")
-            ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'To Ship' ELSE 'Cancelled' END) LIKE '%{$key}%'")
+            ->orWhereRaw("(CASE WHEN status = 1 THEN 'Delivered' WHEN status = 2 THEN 'To Receive' WHEN status = 3 THEN 'For Pickup' ELSE 'Cancelled' END) LIKE '%{$key}%'")
             ->paginate($page_number);
         }
 
@@ -231,7 +231,9 @@ class BookingController extends Controller
         $booking->receiver_contact = $booking_form['contact_number'][1];
         $booking->vehicle_type = $booking_form['vehicle_form'][1];
         $booking->pick_up = $booking_form['pick_up'][1];
+        $booking->pick_up = $booking_form['pick_up_complete_address'][1];
         $booking->drop_off = $booking_form['drop_off'][1];
+        $booking->drop_off = $booking_form['drop_off_complete_address'][1];
         $booking->date_time = date('F j, Y h:i A', strtotime($booking_form['date_time'][1]));
 
         if ($booking_form['payment_method'][1] == 'Paymaya') {
@@ -320,6 +322,20 @@ class BookingController extends Controller
         $delivery = new Delivery();
         $delivery->booking_id = $request['booking_id'];
         $delivery->driver_id = $request['driver_id'];
+
+        $driver = UserProfile::where('user_id', $request['driver_id'])->first();
+
+        if ($driver) {
+            $driver_name = $driver->first_name . ' ' . $driver->middle_name . ' ' . $driver->last_name;
+        } else {
+            $driver_name = 'N/A';
+        }
+
+        if ($request['payment_method'] != 'Cash On Delivery') {
+            Booking::where('booking_id', $request['booking_id'])->update([
+                'driver_name' => $driver_name
+            ]);
+        }
         
         $delivery->save();
 
