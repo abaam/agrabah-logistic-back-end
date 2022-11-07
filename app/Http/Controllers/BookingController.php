@@ -20,7 +20,7 @@ class BookingController extends Controller
         $entries = \Request::get('entries');
         $page_number = $entries;
         $bookings_customer = new BookingsCollection(Booking::whereIn('status', [2, 3, 5])->whereIn('payment_status', [0, 1, 2])->paginate($page_number));
-        $bookings_driver = new BookingsCollection(Booking::whereIn('status', [3])->whereIn('payment_status', [0, 2])->paginate($page_number));
+        $bookings_driver = new BookingsCollection(Booking::whereIn('status', [3])->whereIn('payment_status', [2])->orWhere('payment_method', [2])->paginate($page_number));
         $bookings_admin = new BookingsCollection(Booking::whereIn('status', [2, 3, 5])->whereIn('payment_status', [0, 2])->paginate($page_number));
 
         $for_pick_up = Booking::whereIn('status', [3, 5])->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
@@ -231,9 +231,9 @@ class BookingController extends Controller
         $booking->receiver_contact = $booking_form['contact_number'][1];
         $booking->vehicle_type = $booking_form['vehicle_form'][1];
         $booking->pick_up = $booking_form['pick_up'][1];
-        $booking->pick_up = $booking_form['pick_up_complete_address'][1];
+        $booking->pick_up_complete_address = $booking_form['pick_up_complete_address'][1];
         $booking->drop_off = $booking_form['drop_off'][1];
-        $booking->drop_off = $booking_form['drop_off_complete_address'][1];
+        $booking->drop_off_complete_address = $booking_form['drop_off_complete_address'][1];
         $booking->date_time = date('F j, Y h:i A', strtotime($booking_form['date_time'][1]));
 
         if ($booking_form['payment_method'][1] == 'Paymaya') {
