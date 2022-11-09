@@ -31,25 +31,47 @@ class RegisterController extends Controller
             $user->save();
 
             //OTP Sending thru iTextMo
-            $ch = curl_init();
-            $itexmo = array(
-                '1' => $user->phone_number,
-                '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
-                '3' => env('ITEXMO_API_KEY'),
-                'passwd' => env('ITEXMO_PW')
-            );
-            curl_setopt($ch, CURLOPT_URL,"https://www.itexmo.com/php_api/api.php");
-            curl_setopt($ch, CURLOPT_POST, 1);
+            // $ch = curl_init();
+            // $itexmo = array(
+            //     '1' => $user->phone_number,
+            //     '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
+            //     '3' => env('ITEXMO_API_KEY'),
+            //     'passwd' => env('ITEXMO_PW')
+            // );
+            // curl_setopt($ch, CURLOPT_URL,"https://www.itexmo.com/php_api/api.php");
+            // curl_setopt($ch, CURLOPT_POST, 1);
 
-            //Send the parameters set above with the request
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($itexmo));
+            // //Send the parameters set above with the request
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($itexmo));
 
-            // Receive response from server
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $output = curl_exec($ch);
-            curl_close ($ch);
+            // // Receive response from server
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // $output = curl_exec($ch);
+            // curl_close ($ch);
 
             // Show the server response
+            // echo $output;
+
+            // Semaphore
+            $ch = curl_init();
+            $parameters = array(
+                'apikey' => env('SEMAPHORE_KEY'), //Your API KEY
+                'number' => $user->phone_number,
+                'message' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
+                'sendername' => env('SEMAPHORE_SENDER_NAME')
+            );
+            curl_setopt( $ch, CURLOPT_URL,'https://semaphore.co/api/v4/messages' );
+            curl_setopt( $ch, CURLOPT_POST, 1 );
+
+            //Send the parameters set above with the request
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $parameters ) );
+
+            // Receive response from server
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $output = curl_exec( $ch );
+            curl_close ($ch);
+
+            //Show the server response
             // echo $output;
 
             // Login registered user 
@@ -57,7 +79,7 @@ class RegisterController extends Controller
 
             return response()->json([
                 'message' => 'You are successfully registered. Kindly check your inbox for your verification code.',
-                'phone_number' => $request->phone_number
+                'user' => $user
             ]);
 
         }

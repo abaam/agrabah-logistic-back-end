@@ -16,7 +16,7 @@ class VerificationController extends Controller
         ]);
 
         $check_otp = User::where('pin', $request->otp_code)->where('phone_number', $request->phone_number)->first();
-
+        
         if($check_otp) {
             $check_otp->verified = 1;
             $check_otp->save();
@@ -35,34 +35,9 @@ class VerificationController extends Controller
         $user->pin = $pin;
         $user->update();
 
-        // print_r($user);
-
-
-        // //OTP Sending thru iTextMo
         // $ch = curl_init();
         // $itexmo = array(
         //     '1' => $user->phone_number,
-        //     '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
-        //     '3' => env('ITEXMO_API_KEY'),
-        //     'passwd' => env('ITEXMO_PW')
-        // );
-        // curl_setopt($ch, CURLOPT_URL,"https://www.itexmo.com/php_api/api.php");
-        // curl_setopt($ch, CURLOPT_POST, 1);
-
-        // //Send the parameters set above with the request
-        // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($itexmo));
-
-        // // Receive response from server
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // $output = curl_exec($ch);
-        // curl_close ($ch);
-
-        // // Show the server response
-        // return($output);
-
-        // $ch = curl_init();
-        // $itexmo = array(
-        //     '1' => "09932913899",
         //     '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
         //     '3' => env('ITEXMO_API_KEY'),
         //     'passwd' => env('ITEXMO_PW')
@@ -74,32 +49,40 @@ class VerificationController extends Controller
         // $output = curl_exec($ch);
         // curl_close ($ch); 
 
-        $url = 'https://www.itexmo.com/php_api/api.php';
-        $itexmo = array(
-                '1' => $user->phone_number,
-                '2' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
-                '3' => env('ITEXMO_API_KEY'),
-                'passwd' => env('ITEXMO_PW')
-            );
-        $param = array(
-            'http' => array(
-                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method'  => 'POST',
-                'content' => http_build_query($itexmo),
-            ),
+        // // echo($output);
+
+        // if($output == 0) {
+        //     $status = true;
+        //     $message = "Success! Your new pin has been sent.";
+        // } else {
+        //     $status = false;
+        //     $message = "Error detected! Please wait a few minutes before you try again.";
+        // }
+        
+        // Semaphore
+        $ch = curl_init();
+        $parameters = array(
+            'apikey' => env('SEMAPHORE_KEY'), //Your API KEY
+            'number' => $user->phone_number,
+            'message' => "Your Agrabah Logistics One-Time Code is ".$pin.". Enter this to confirm your registration.",
+            'sendername' => env('SEMAPHORE_SENDER_NAME')
         );
-        $context  = stream_context_create($param);
-        $output = file_get_contents($url, false, $context);
+        curl_setopt( $ch, CURLOPT_URL,'https://semaphore.co/api/v4/messages' );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
 
-        // echo($output);
+        //Send the parameters set above with the request
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $parameters ) );
 
-        if($output == 0) {
-            $status = true;
-            $message = "Success! Your new pin has been sent.";
-        } else {
-            $status = false;
-            $message = "Error detected! Please wait a few minutes before you try again.";
-        }
+        // Receive response from server
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        $output = curl_exec( $ch );
+        curl_close ($ch);
+
+        //Show the server response
+        // echo $output;
+
+        $status = true;
+        $message = "Success! Your new pin has been sent. Please check your registered phone number.";
 
         return response()->json(['success' => $status, 'message' => $message]);
     }
