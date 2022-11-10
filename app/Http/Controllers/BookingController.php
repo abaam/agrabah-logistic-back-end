@@ -29,7 +29,7 @@ class BookingController extends Controller
 
         $for_pick_up_driver = Booking::whereIn('status', [3])->whereIn('payment_status', [2, 0])->orderBy('date_time', 'ASC')->get();
 
-        $for_pick_up_admin = Booking::where('status', [3, 5])->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
+        $for_pick_up_admin = Booking::whereIn('status', [2, 3, 5])->whereIn('payment_status', [0, 2])->orderBy('date_time', 'ASC')->get();
         $to_receive_admin = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
         $delivered_admin = Booking::where('status', 1)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
 
