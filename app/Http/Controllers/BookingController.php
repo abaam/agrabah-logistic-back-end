@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BookingsCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Carbon\Carbon;
 use App\Models\Booking;
 use App\Models\Sale;
 use App\Models\Delivery;
@@ -440,5 +441,15 @@ class BookingController extends Controller
         $sale = Sale::where('booking_id', $id)->first();
 
         return response()->json(['sale' => $sale]);
+    }
+
+    public function trackingDetails($id)
+    {
+        $tracking = TrackingUpdate::where('tracking_id', $id)->orderBy('created_at', 'DESC')->get();
+        foreach($tracking as $data) {
+            $data->date_time = Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)->format('F d, Y');
+            // - g:i:s a
+        }
+        return response()->json(['tracking' => $tracking]);
     }
 }

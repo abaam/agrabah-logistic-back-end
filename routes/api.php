@@ -57,3 +57,8 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function (
 	Route::post('storeEmail', [UserProfileController::class, 'storeEmail'])->name('storeEmail');
 	Route::post('storeAddress', [UserProfileController::class, 'storeAddress'])->name('storeAddress');
 });
+
+Route::group(['prefix' => 'tracking', 'middleware' => ['auth:sanctum']], function () {
+	//tracking
+	Route::get('details/{id}', [bookingController::class, 'trackingDetails'])->name('trackingDetails');
+});
