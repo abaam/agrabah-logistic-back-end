@@ -41,6 +41,7 @@ Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], functio
 	Route::post('approvePayment', [BookingController::class, 'approvePayment'])->name('approvePayment');
 	Route::post('acceptBooking', [BookingController::class, 'acceptBooking'])->name('acceptBooking');
 	Route::post('updateTracking', [BookingController::class, 'updateTracking'])->name('updateTracking');
+	Route::get('status/{id}', [BookingController::class, 'trackingStatus'])->name('trackingStatus');
 });
 
 Route::group(['prefix' => 'sales', 'middleware' => ['auth:sanctum']], function () {
@@ -58,7 +59,8 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function (
 	Route::post('storeAddress', [UserProfileController::class, 'storeAddress'])->name('storeAddress');
 });
 
-Route::group(['prefix' => 'tracking', 'middleware' => ['auth:sanctum']], function () {
+Route::prefix('tracking')->group(function () {
 	//tracking
-	Route::get('details/{id}', [bookingController::class, 'trackingDetails'])->name('trackingDetails');
+	Route::get('details/{id}', [BookingController::class, 'trackingDetails'])->name('trackingDetails');
+	Route::get('search/{id}', [BookingController::class, 'trackingSearch'])->name('trackingSearch');
 });

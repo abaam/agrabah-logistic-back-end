@@ -357,9 +357,9 @@ class BookingController extends Controller
         if ($request['location']) {
             $location = $request['location'];
         } else {
-            if ($request['tracking_status'] == 'Item has been picked up by our driver') {
+            if ($request['tracking_status'] == 'Picked up') {
                 $location = $request['pick_up_location'];
-            } else if ($request['tracking_status'] == 'Item has been delivered') {
+            } else if ($request['tracking_status'] == 'Delivered') {
                 $location = $request['drop_off_location'];
             } else {
                 $location = 'N/A';
@@ -396,7 +396,7 @@ class BookingController extends Controller
             'tracking_id' => $tracking_id
         ]);
 
-        if ($request['tracking_status'] == 'Item has been delivered') {
+        if ($request['tracking_status'] == 'Delivered') {
             Booking::where('booking_id', $request['booking_id'])->update([
                 'status' => 1
             ]);
@@ -414,7 +414,7 @@ class BookingController extends Controller
             $payment_method = 2;
         }
 
-        if ($request['tracking_status'] == 'Item has been delivered' && $request['payment_method'] == 'Cash On Delivery') {
+        if ($request['tracking_status'] == 'Delivered' && $request['payment_method'] == 'Cash On Delivery') {
             $sale = new Sale();
             $sale->booking_id = $request['booking_id'];
             $sale->driver_id = $request['driver_id'];
@@ -427,7 +427,7 @@ class BookingController extends Controller
             ]);
         }
 
-        if ($request['tracking_status'] == 'Item has been delivered' && $request['payment_method'] != 'Cash On Delivery') {
+        if ($request['tracking_status'] == 'Delivered' && $request['payment_method'] != 'Cash On Delivery') {
             Booking::where('booking_id', $request['booking_id'])->update([
                 'driver_name' => $driver_name
             ]);
@@ -443,6 +443,11 @@ class BookingController extends Controller
         return response()->json(['sale' => $sale]);
     }
 
+    public function trackingStatus($id) {
+        $tracking = TrackingUpdate::where('booking_id', $id)->orderBy('id', 'DESC')->first();
+        return response()->json(['tracking' => $tracking]);
+    }
+
     public function trackingDetails($id)
     {
         $tracking = TrackingUpdate::where('tracking_id', $id)->orderBy('created_at', 'DESC')->get();
@@ -451,5 +456,16 @@ class BookingController extends Controller
             // - g:i:s a
         }
         return response()->json(['tracking' => $tracking]);
+    }
+
+    public function trackingSearch($id)
+    {   
+        $tracking = Tracking::where('tracking_id', $id)->first();
+        if(!empty($tracking)) {
+            $status = true;
+        } else {
+            $status = false;
+        }
+        return response()->json(['success' => $status]);
     }
 }
