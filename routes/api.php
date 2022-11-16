@@ -8,6 +8,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,11 @@ Route::group(['prefix' => 'sales', 'middleware' => ['auth:sanctum']], function (
 	Route::get('/', [SaleController::class, 'index']);
 	Route::get('wallet', [SaleController::class, 'wallet'])->name('wallet');
 	Route::get('search', [SaleController::class, 'search'])->name('search');
+});
+
+Route::group(['prefix' => 'notifications', 'middleware' => ['auth:sanctum']], function () {
+	//Notification
+	Route::get('/', [NotificationController::class, 'index']);
 });
 
 Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {
