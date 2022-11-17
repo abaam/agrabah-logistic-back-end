@@ -36,7 +36,9 @@ class BookingController extends Controller
         $to_receive_admin = Booking::where('status', 2)->whereIn('payment_status', [0, 1, 2])->orderBy('date_time', 'ASC')->get();
         $delivered_admin = Booking::where('status', 1)->where('payment_status', 0)->orderBy('date_time', 'ASC')->get();
 
-        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'bookings_admin' => $bookings_admin, 'for_pick_up' => $for_pick_up, 'to_receive' => $to_receive, 'delivered' => $delivered, 'for_pick_up_driver' => $for_pick_up_driver, 'for_pick_up_admin' => $for_pick_up_admin, 'to_receive_admin' => $to_receive_admin, 'delivered_admin' => $delivered_admin], 200);
+        $check_profile = UserProfile::where('user_id', $user_id)->count();
+
+        return response()->json(['bookings_customer' => $bookings_customer, 'bookings_driver' => $bookings_driver, 'bookings_admin' => $bookings_admin, 'for_pick_up' => $for_pick_up, 'to_receive' => $to_receive, 'delivered' => $delivered, 'for_pick_up_driver' => $for_pick_up_driver, 'for_pick_up_admin' => $for_pick_up_admin, 'to_receive_admin' => $to_receive_admin, 'delivered_admin' => $delivered_admin, 'check_profile' => $check_profile], 200);
     }
 
     public function transactions()

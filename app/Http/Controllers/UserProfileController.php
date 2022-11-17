@@ -210,4 +210,12 @@ class UserProfileController extends Controller
 
         return response()->json($profile);
     }
+
+    public function checkProfile()
+    {
+        $user_id = Auth::user()->id;
+        $profile = UserProfile::where('user_id', $user_id)->first();
+        
+        return response()->json($profile);
+    }
 }

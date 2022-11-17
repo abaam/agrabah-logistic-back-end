@@ -55,11 +55,13 @@ Route::group(['prefix' => 'sales', 'middleware' => ['auth:sanctum']], function (
 Route::group(['prefix' => 'notifications', 'middleware' => ['auth:sanctum']], function () {
 	//Notification
 	Route::get('/', [NotificationController::class, 'index']);
+	Route::post('view', [NotificationController::class, 'view'])->name('view');
 });
 
 Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {
 	//User
 	Route::get('profile', [UserProfileController::class, 'show'])->name('profile');
+	Route::get('checkProfile', [UserProfileController::class, 'checkProfile'])->name('checkProfile');
 	Route::post('storeName', [UserProfileController::class, 'storeName'])->name('storeName');
 	Route::post('storeEmail', [UserProfileController::class, 'storeEmail'])->name('storeEmail');
 	Route::post('storeAddress', [UserProfileController::class, 'storeAddress'])->name('storeAddress');
