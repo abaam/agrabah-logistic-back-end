@@ -26,6 +26,8 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('/verify', [VerificationController::class, 'verify'])->name('verify');
 Route::post('/resend', [VerificationController::class, 'resend'])->name('resend');
+Route::post('/request-verification', [LoginController::class, 'requestVerification'])->name('requestVerification');
+Route::post('/forgot-password', [LoginController::class, 'forgotPassword'])->name('forgotPassword');
 
 Route::group(['prefix' => 'bookings', 'middleware' => ['auth:sanctum']], function () {
 	//Booking
