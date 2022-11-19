@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserProfile;
+use App\Models\User;
+use Hash;
 
 class UserProfileController extends Controller
 {
@@ -217,5 +219,31 @@ class UserProfileController extends Controller
         $profile = UserProfile::where('user_id', $user_id)->first();
         
         return response()->json($profile);
+    }
+
+    public function changePassword(Request $request) {
+        $credentials = $request->validate([
+            'new_password' => 'required'
+        ]);
+
+        if (!$credentials) {
+            return response()->json();
+        } else {
+            // $credentials = $request['data'];
+            // echo($credentials['new_password']);
+            $user_id = Auth::user()->id;
+            $user = User::where('id', '=', $user_id)->firstOrFail();
+            $user->password = Hash::make($request->new_password);
+            $user->update();
+
+            $status = true;
+            $message = "Success! Password has been changed.";
+
+            return response()->json([
+                'message' => $message,
+                'status' => $status
+            ]);
+
+        }
     }
 }

@@ -67,6 +67,8 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function (
 	Route::post('storeName', [UserProfileController::class, 'storeName'])->name('storeName');
 	Route::post('storeEmail', [UserProfileController::class, 'storeEmail'])->name('storeEmail');
 	Route::post('storeAddress', [UserProfileController::class, 'storeAddress'])->name('storeAddress');
+	Route::post('changePassword', [UserProfileController::class, 'changePassword'])->name('changePassword');
+
 });
 
 Route::prefix('tracking')->group(function () {
