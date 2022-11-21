@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\UserProfile;
 use App\Models\User;
 use Hash;
+use App\Http\Resources\CustomersCollection;
+use App\Http\Resources\DriversCollection;
 
 class UserProfileController extends Controller
 {
@@ -245,5 +247,67 @@ class UserProfileController extends Controller
             ]);
 
         }
+    }
+
+    public function viewCustomers()
+    {
+        $entries = \Request::get('entries');
+        $page_number = $entries;
+        $customers = new CustomersCollection(User::where('register_as', 2)->paginate($page_number));
+
+        $verified = User::where('register_as', 2)->where('verified', 1)->orderBy('created_at', 'ASC')->get();
+        $not_verified = User::where('register_as', 2)->where('verified', 0)->orderBy('created_at', 'ASC')->get();
+
+        return response()->json(['customers' => $customers, 'verified' => $verified, 'not_verified' => $not_verified], 200);
+    }
+
+    public function viewDrivers()
+    {
+        $entries = \Request::get('entries');
+        $page_number = $entries;
+        $drivers = new DriversCollection(User::where('register_as', 1)->paginate($page_number));
+
+        $verified = User::where('register_as', 2)->where('verified', 1)->orderBy('created_at', 'ASC')->get();
+        $not_verified = User::where('register_as', 2)->where('verified', 0)->orderBy('created_at', 'ASC')->get();
+
+        return response()->json(['drivers' => $drivers, 'verified' => $verified, 'not_verified' => $not_verified], 200);
+    }
+
+    public function search()
+    {
+        $key = \Request::get('q');
+        $entries = \Request::get('entries');
+        $page_number = $entries;
+
+        $Customer = User::where('phone_number','LIKE',"%{$key}%")
+        ->orWhere('pin','LIKE',"%{$key}%")
+        ->orWhereRaw("(CASE WHEN verified = 0 THEN 'Not Verified' WHEN verified = 1 THEN 'verified' END) LIKE '%{$key}%'")
+        ->where('register_as', 2)
+        ->paginate($page_number);
+
+        $Driver = User::where('phone_number','LIKE',"%{$key}%")
+        ->orWhere('pin','LIKE',"%{$key}%")
+        ->orWhereRaw("(CASE WHEN verified = 0 THEN 'Not Verified' WHEN verified = 1 THEN 'verified' END) LIKE '%{$key}%'")
+        ->where('register_as', 1)
+        ->paginate($page_number);
+
+        $customers = new CustomersCollection($Customer);
+        $drivers = new DriversCollection($Driver);
+
+        return response()->json(['customers' => $customers, 'drivers' => $drivers], 200);
+    }
+
+    public function viewCustomerDetails($id)
+    {
+        $customer = UserProfile::where('user_id', $id)->first();
+
+        return response()->json(['customer' => $customer], 200);
+    }
+
+    public function viewDriverDetails($id)
+    {
+        $driver = UserProfile::where('user_id', $id)->first();
+
+        return response()->json(['driver' => $driver], 200);
     }
 }

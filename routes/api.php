@@ -63,12 +63,17 @@ Route::group(['prefix' => 'notifications', 'middleware' => ['auth:sanctum']], fu
 Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function () {
 	//User
 	Route::get('profile', [UserProfileController::class, 'show'])->name('profile');
+	Route::get('customers', [UserProfileController::class, 'viewCustomers'])->name('customers');
+	Route::get('drivers', [UserProfileController::class, 'viewDrivers'])->name('drivers');
 	Route::get('checkProfile', [UserProfileController::class, 'checkProfile'])->name('checkProfile');
+	Route::get('customer/{id}', [UserProfileController::class, 'viewCustomerDetails']);
+	Route::get('driver/{id}', [UserProfileController::class, 'viewDriverDetails']);
+	Route::get('customers/search', [UserProfileController::class, 'search'])->name('search');
+	Route::get('drivers/search', [UserProfileController::class, 'search'])->name('search');
 	Route::post('storeName', [UserProfileController::class, 'storeName'])->name('storeName');
 	Route::post('storeEmail', [UserProfileController::class, 'storeEmail'])->name('storeEmail');
 	Route::post('storeAddress', [UserProfileController::class, 'storeAddress'])->name('storeAddress');
 	Route::post('changePassword', [UserProfileController::class, 'changePassword'])->name('changePassword');
-
 });
 
 Route::prefix('tracking')->group(function () {
