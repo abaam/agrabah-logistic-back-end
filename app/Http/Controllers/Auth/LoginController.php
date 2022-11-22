@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\UserProfile;
 use Hash;
 
 class LoginController extends Controller
@@ -27,8 +28,28 @@ class LoginController extends Controller
 
         $verified = User::where('phone_number', $request->phone_number)->where('verified', 1)->first();
         $not_verified = User::where('phone_number', $request->phone_number)->where('verified', 0)->first();
+        $user_profile = UserProfile::where('user_id', $verified->id)->first();
 
         if($verified){
+            if(!empty($user_profile)) {
+                // $name = $user_profile->first_name;
+                if($verified->register_as === 1) {
+                    $name = $user_profile->first_name.' - Driver';
+                } else if($verified->register_as === 2) {
+                    $name = $user_profile->first_name.' - Customer';
+                } else if($verified->register_as === 3) {
+                    $name = $user_profile->first_name.' - Admin';
+                }
+            } else {
+                if($verified->register_as === 1) {
+                    $name = 'Driver';
+                } else if($verified->register_as === 2) {
+                    $name = 'Customer';
+                } else if($verified->register_as === 3) {
+                    $name = 'Admin';
+                }
+            }
+
             $response = [
                 'verified' => true,
                 'access_token' => Auth::user()->createToken('MyApp')->plainTextToken,
@@ -36,6 +57,7 @@ class LoginController extends Controller
                 'csrf_token' => csrf_token(),
                 'role' => $verified->register_as,
                 'id' => $verified->id,
+                'user_name' => $name
             ];
         } else {
             $response = [
@@ -46,7 +68,7 @@ class LoginController extends Controller
                 'token_type' => 'Bearer',
                 'csrf_token' => csrf_token(),
                 'role' => $not_verified->register_as,
-                'id' => $not_verified->id,
+                'id' => $not_verified->id
             ];
         }
 
