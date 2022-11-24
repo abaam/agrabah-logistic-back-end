@@ -74,6 +74,9 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth:sanctum']], function (
 	Route::post('storeEmail', [UserProfileController::class, 'storeEmail'])->name('storeEmail');
 	Route::post('storeAddress', [UserProfileController::class, 'storeAddress'])->name('storeAddress');
 	Route::post('changePassword', [UserProfileController::class, 'changePassword'])->name('changePassword');
+	Route::post('/mobileVerification', [UserProfileController::class, 'mobileVerification'])->name('mobileRequestVerification');
+	Route::post('/changeMobileNumber', [UserProfileController::class, 'changeMobileNumber'])->name('changeMobileNumber');
+
 });
 
 Route::prefix('tracking')->group(function () {

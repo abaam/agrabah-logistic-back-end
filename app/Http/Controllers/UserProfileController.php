@@ -310,4 +310,84 @@ class UserProfileController extends Controller
 
         return response()->json(['driver' => $driver], 200);
     }
+
+    public function mobileVerification(Request $request)
+    {
+        $credentials = $request->validate([
+            'new_mobile_number' => 'required'
+        ]);
+
+        if (!$credentials) {
+            return response()->json();
+        } else {
+            if(Auth::check()) {
+                $code = random_int(100000, 999999);
+                
+                $user = Auth::user();
+                $user->mobile_verification_code = $code;
+                $user->update();
+
+                // Semaphore
+                $ch = curl_init();
+                $parameters = array(
+                    'apikey' => env('SEMAPHORE_KEY'), //Your API KEY
+                    'number' => $request->new_mobile_number,
+                    'message' => "Your Agrabah Logistics Verification code is ".$code.". Enter this to change your registered number.",
+                    'sendername' => env('SEMAPHORE_SENDER_NAME')
+                );
+                curl_setopt( $ch, CURLOPT_URL,'https://semaphore.co/api/v4/messages' );
+                curl_setopt( $ch, CURLOPT_POST, 1 );
+
+                //Send the parameters set above with the request
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $parameters ) );
+
+                // Receive response from server
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                $output = curl_exec( $ch );
+                curl_close ($ch);
+
+                //Show the server response
+                // echo $output;
+
+                $status = true;
+                $message = "We have sent you your verification code. Please check your inbox.";
+            }
+
+            return response()->json([
+                'message' => $message,
+                'status' => $status
+            ]);
+
+        }
+    }
+
+    public function changeMobileNumber(Request $request)
+    {
+        $requestData = $request->validate([
+            'new_mobile_number' => 'required',
+            'verification_code' => 'required'
+        ]);
+
+        if (!$requestData) {
+            return response()->json();
+        } else {
+            $user = Auth::user();
+
+            if($request->verification_code === $user->mobile_verification_code) {
+                $user->phone_number = $request->new_mobile_number;
+                $user->mobile_verification_code = null;
+                $user->update();
+
+                return response()->json([
+                    'message' => "Phone number successfully changed",
+                    'status' => true
+                ]);
+            } else {
+                return response()->json([
+                    'message' => "Incorrect verification code",
+                    'status' => false
+                ]);
+            }
+        }
+    }
 }
